@@ -1,0 +1,27 @@
+# Global owners
+* @BotshareAI
+
+# ROS2 interfaces
+/ros2/ @BotshareAI
+
+# Schemas
+/schemas/ @BotshareAI
+
+# Documentation
+/docs/ @BotshareAI
+
+# Examples
+/examples/ @BotshareAI
+
+# Tests and tools
+/tests/ @BotshareAI
+/tools/ @BotshareAI
+
+# Root governance files
+/README.md @BotshareAI
+/LICENSE @BotshareAI
+/CONTRIBUTING.md @BotshareAI
+/SECURITY.md @BotshareAI
+/NOTICE.md @BotshareAI
+/AUTHORS.md @BotshareAI
+/CHANGELOG.md @BotshareAI
