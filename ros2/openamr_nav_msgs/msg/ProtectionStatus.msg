@@ -1,0 +1,13 @@
+uint8 COLLISION_MONITOR_UNKNOWN=0
+uint8 COLLISION_MONITOR_INACTIVE=1
+uint8 COLLISION_MONITOR_ACTIVE=2
+uint8 collision_monitor
+uint16 collision_monitor_reason
+
+MotionSourceCoverage[] motion_sources
+
+uint8 REAR_COVERAGE_UNKNOWN=0
+uint8 REAR_COVERAGE_UNAVAILABLE=1
+uint8 REAR_COVERAGE_AVAILABLE=2
+uint8 rear_coverage
+uint16 rear_coverage_reason

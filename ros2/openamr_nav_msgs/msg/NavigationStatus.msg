@@ -1,0 +1,97 @@
+# Aggregated navigation health/readiness. Functional status only, not a safety function.
+
+std_msgs/Header header
+uint16 contract_version
+string profile_id
+string thresholds_id              # "UNSET" if no threshold profile applied
+
+uint8 HEALTH_UNKNOWN=0            # unset field should never read as healthy
+uint8 HEALTH_OK=1
+uint8 HEALTH_DEGRADED=2
+uint8 HEALTH_FAULT=3
+uint8 health
+
+uint8 READINESS_NOT_READY=0       # conservative default
+uint8 READINESS_READY=1
+uint8 readiness
+
+uint16[] not_ready_reasons
+uint16[] active_reasons
+uint8 sensor_gaps
+
+NavStackStatus stack
+LocalizationStatus localization
+SensorStatus[] sensors
+NavTaskStatus task
+RecoveryStatus recovery
+ProtectionStatus protection
+ActiveConstraint[] constraints
+# base/I8 controller has no dedicated status yet - see reason codes below
+
+# reason codes: 0=NONE everywhere, groups start at x001, append-only
+uint16 NONE=0
+
+# stack
+uint16 NAV_STACK_NOT_STARTED=1001
+uint16 NAV_STACK_STARTING=1002
+uint16 NAV_STACK_RESETTING=1003
+uint16 NAV_NODE_INACTIVE=1004
+uint16 NAV_CONFIG_FAULT=1005
+
+# sensors
+uint16 SENSOR_DATA_STALE=2001
+uint16 SENSOR_NOT_CONFIGURED=2002
+uint16 SENSOR_NO_DATA_YET=2003
+uint16 SENSOR_DATA_INVALID=2004
+uint16 SENSOR_RATE_LOW=2005
+
+# localization
+uint16 LOCALIZATION_NOT_INITIALIZED=3001
+uint16 LOCALIZATION_UNCERTAIN=3002
+uint16 LOCALIZATION_STALE_WHILE_MOVING=3003
+uint16 LOCALIZATION_PAUSED_FOR_DOCKING=3004
+uint16 TF_UNAVAILABLE=3005
+
+# nav task
+uint16 GOAL_OUTSIDE_MAP=4001
+uint16 GOAL_BLOCKED=4002
+uint16 START_BLOCKED=4003
+uint16 NO_VALID_PATH=4004
+uint16 PLANNER_TIMEOUT=4005
+uint16 CONTROLLER_TIMEOUT=4006
+uint16 STUCK=4007
+uint16 LOCAL_BLOCKED=4008
+uint16 NAV_UNKNOWN_FAULT=4009
+
+# recovery
+uint16 RECOVERY_IN_PROGRESS=5001
+uint16 RECOVERY_LIMIT_REACHED=5002
+
+# protection
+uint16 COLLISION_LAYER_INACTIVE=6001
+uint16 MOTION_SOURCE_UNPROTECTED=6002
+uint16 REAR_COVERAGE_UNAVAILABLE=6003
+uint16 PROTECTION_STATE_UNKNOWN=6004
+uint16 SPEED_LIMIT_ACTIVE=6005
+uint16 REVERSE_SPEED_LIMITED=6006
+
+# docking
+uint16 DOCK_ENGAGEMENT_UNKNOWN=7001
+uint16 DOCK_TAGS_NOT_VISIBLE=7002
+uint16 DOCK_ALIGNMENT_FAILED=7003
+uint16 DOCK_TIMEOUT=7004
+uint16 DOCK_STAGING_FAILED=7005
+uint16 UNDOCK_FAILED=7006
+uint16 UNDOCKING_BEFORE_GOAL=7007
+uint16 DOCK_REASON_UNSPECIFIED=7008
+
+# parking
+uint16 PARK_TARGET_UNREACHABLE=8001
+uint16 PARK_POSE_MISSED=8002
+uint16 PARKING_NOT_IMPLEMENTED=8003
+
+# base / I8
+uint16 BASE_LINK_LOST=9001
+uint16 BASE_NOT_READY=9002
+uint16 ESTOP_ACTIVE=9003
+uint16 BATTERY_LOW=9004
