@@ -26,9 +26,10 @@ producer has gone silent from staleness alone.
 `NavigationStatus.contract_version` is set by the producer to
 `NavigationStatus.CONTRACT_VERSION` (currently `1`).
 
-- Adding a field, or a reason/enum value, does not require a version bump.
-- Removing, renumbering, or changing the type of a field requires a version
-  bump and coordination with consumers.
+- Adding a reason code or enum constant does not require a version bump.
+- Adding, removing, renaming, reordering, or retyping a message field
+  requires a version bump and rebuilding all consumers.
+- Changing the meaning of an existing value requires a version bump.
 - Reason codes are append-only: never renumbered or reused, per group.
 
 ## Field validity
@@ -54,8 +55,15 @@ should not be read as a real value.
 
 ## E-stop and base dependency
 
-`ESTOP_ACTIVE`, `BASE_LINK_LOST`, `BASE_NOT_READY`, and `BATTERY_LOW`
-(`NavigationStatus.msg`, 9000s) reflect what navigation has observed about
-the base/I8 controller — they are relayed, not determined here, and this
-package implements no E-stop or safety logic of its own. Authoritative
-base/E-stop state belongs to I8.
+Reflects what navigation has observed from the base/I8 controller. This
+package does not actuate, reset, or validate the E-stop, does not disable
+motor power or re-enable actuators, and does not claim the robot is safe.
+The physical E-stop chain, reset sequence, actuator re-enable, and safe
+recovery are owned by I8 —
+[openamr-platform-fw#6](https://github.com/openAMRobot/openamr-platform-fw/issues/6).
+
+- `ESTOP_ACTIVE` is reported only when fresh base telemetry explicitly
+  reports an active E-stop.
+- If base telemetry is missing or stale, report `BASE_LINK_LOST` or
+  `BASE_NOT_READY` instead, and `navigation_readiness` must be
+  `NAVIGATION_READINESS_NOT_READY`.

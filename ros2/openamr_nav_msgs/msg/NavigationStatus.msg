@@ -98,5 +98,7 @@ uint16 PARKING_NOT_IMPLEMENTED=8003
 # base / I8
 uint16 BASE_LINK_LOST=9001
 uint16 BASE_NOT_READY=9002
-uint16 ESTOP_ACTIVE=9003          # observed base/I8 dependency, not a safety determination
+uint16 ESTOP_ACTIVE=9003          # only on fresh I8 telemetry reporting E-stop
+                                   # active; stale/missing telemetry is
+                                   # BASE_LINK_LOST/BASE_NOT_READY, not this
 uint16 BATTERY_LOW=9004
