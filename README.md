@@ -6,6 +6,9 @@ Shared ROS 2 messages, services, actions, schemas, and interface contracts for t
 
 Current maturity level: Experimental
 
+ROS 2 Jazzy pull-request and main-branch builds are described in
+[Build verification](docs/verification.md), including checks and evidence.
+
 ## Purpose
 
 This repository defines interface contracts shared across the OpenAMRobot ecosystem, including:

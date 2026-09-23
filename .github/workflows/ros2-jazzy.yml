@@ -1,0 +1,79 @@
+name: ROS 2 Jazzy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ros2-jazzy:
+    name: quality/build
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve ROS dependencies
+        run: |
+          set -eo pipefail
+          source /opt/ros/jazzy/setup.bash
+          apt-get update
+          apt-get install -y --no-install-recommends python3-colcon-common-extensions python3-rosdep
+          if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
+            rosdep init
+          fi
+          rosdep update --rosdistro jazzy
+          rosdep install --from-paths ros2 --ignore-src --rosdistro jazzy -y
+
+      - name: Build interface packages
+        run: |
+          set -eo pipefail
+          source /opt/ros/jazzy/setup.bash
+          colcon build --base-paths ros2 --event-handlers console_direct+
+
+      - name: Verify generated interfaces
+        run: |
+          set -eo pipefail
+          source /opt/ros/jazzy/setup.bash
+          source install/setup.bash
+          python3 - <<'PY' | tee generated-interfaces.log
+          from pathlib import Path
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          from rosidl_generator_py import import_type_support
+          from rosidl_runtime_py.utilities import get_action, get_message, get_service
+
+          loaders = {"msg": get_message, "srv": get_service, "action": get_action}
+          count = 0
+          for manifest in sorted(Path("ros2").rglob("package.xml")):
+              package = ET.parse(manifest).getroot().findtext("name")
+              for kind, load in loaders.items():
+                  for definition in sorted((manifest.parent / kind).glob(f"*.{kind}")):
+                      interface = f"{package}/{kind}/{definition.stem}"
+                      subprocess.run(["ros2", "interface", "show", interface], check=True)
+                      load(interface)
+                      import_type_support(package)
+                      print(f"PASS: {interface}", flush=True)
+                      count += 1
+          if count == 0:
+              raise SystemExit("FAIL: no interface definitions discovered")
+          print(f"PASS: {count} generated interfaces available", flush=True)
+          PY
+
+      - name: Upload build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ros2-jazzy-evidence
+          path: |
+            log/
+            generated-interfaces.log
+          if-no-files-found: warn
