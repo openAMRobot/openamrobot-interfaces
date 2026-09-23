@@ -12,7 +12,7 @@ uint8 health
 
 uint16 reason                     # see NavigationStatus.msg
 builtin_interfaces/Duration pose_age
-float32 covariance_xy
-float32 covariance_yaw
+float32 covariance_xy             # worse of AMCL's x/y variance, m^2
+float32 covariance_yaw            # rad^2
 bool tf_available
 bool correction_paused

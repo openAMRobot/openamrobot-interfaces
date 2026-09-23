@@ -2,15 +2,14 @@
 
 Navigation health, readiness, and fault-status messages for OpenAMRobot 2.0.
 
-This package answers one question for anything downstream: *is navigation okay right
-now, and if not, why?* It covers stack readiness, sensor health, localization,
-the current nav task, recovery, protection-layer coverage, docking, and parking.
-It does not control motion and is not a safety function — it's status reporting only.
+Scoped to the **navigation subsystem only** — not whole-robot readiness, and
+not a safety interface. Arm/base authority and E-stop logic live in I1/I8;
+this package only relays what navigation has observed about them.
 
 ## Messages
 
 `NavigationStatus` is the top-level message and the one most consumers will
-subscribe to. It aggregates the others:
+subscribe to. It aggregates:
 
 - `NavStackStatus` — Nav2 lifecycle rolled up to plain readiness terms
 - `LocalizationStatus` — AMCL pose health and staleness
@@ -19,8 +18,13 @@ subscribe to. It aggregates the others:
 - `RecoveryStatus` — what recovery behavior is running, if any
 - `ProtectionStatus` / `MotionSourceCoverage` / `ActiveConstraint` — which motion
   sources are covered by the collision monitor, and what limits are active
-- `DockingStatus` / `ParkingStatus` — kept separate on purpose; no charging
-  states live here, since manual charging is the current baseline
+
+`DockingStatus` and `ParkingStatus` are **separate top-level messages with
+separate producers**, not fields of `NavigationStatus`. No charging states
+live in either, since manual charging is the current release baseline.
+
+See [CONTRACT.md](CONTRACT.md) for topics, producers, QoS, versioning, and
+field validity rules.
 
 ## A couple of things worth knowing before you consume this
 
@@ -43,4 +47,5 @@ reuse an existing value, since consumers may already depend on it.
 
 Experimental. Fields and values may still change based on real-robot data,
 particularly the docking failure reasons and the localization thresholds,
-which are deliberately left open pending Gate A.
+which are deliberately left open pending Gate A. Build/schema/consumer tests
+are tracked in #6.

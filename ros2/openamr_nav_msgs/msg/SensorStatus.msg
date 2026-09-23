@@ -20,5 +20,5 @@ uint8 state
 
 uint16 reason                     # see NavigationStatus.msg
 builtin_interfaces/Duration data_age
-float32 rate_hz
+float32 rate_hz                   # rolling average over the last ~1s; 0 if ABSENT
 bool required

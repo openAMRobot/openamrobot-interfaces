@@ -1,7 +1,12 @@
-# Aggregated navigation health/readiness. Functional status only, not a safety function.
+# Aggregated navigation health/readiness. Functional status only, not a safety
+# function, and scoped to the navigation subsystem — not whole-robot readiness.
+# Arm/base authority and E-stop logic live in I1/I8, not here.
 
 std_msgs/Header header
-uint16 contract_version
+
+uint16 CONTRACT_VERSION=1         # current version of this interface
+uint16 contract_version           # producer sets this to CONTRACT_VERSION
+
 string profile_id
 string thresholds_id              # "UNSET" if no threshold profile applied
 
@@ -11,9 +16,9 @@ uint8 HEALTH_DEGRADED=2
 uint8 HEALTH_FAULT=3
 uint8 health
 
-uint8 READINESS_NOT_READY=0       # conservative default
-uint8 READINESS_READY=1
-uint8 readiness
+uint8 NAVIGATION_READINESS_NOT_READY=0   # conservative default
+uint8 NAVIGATION_READINESS_READY=1
+uint8 navigation_readiness         # navigation only — not a whole-robot signal
 
 uint16[] not_ready_reasons
 uint16[] active_reasons
@@ -93,5 +98,5 @@ uint16 PARKING_NOT_IMPLEMENTED=8003
 # base / I8
 uint16 BASE_LINK_LOST=9001
 uint16 BASE_NOT_READY=9002
-uint16 ESTOP_ACTIVE=9003
+uint16 ESTOP_ACTIVE=9003          # observed base/I8 dependency, not a safety determination
 uint16 BATTERY_LOW=9004
