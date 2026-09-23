@@ -5,7 +5,7 @@
   <version>0.0.0</version>
   <description>Messages, services and actions for the OpenAMR UI</description>
 
-  <maintainer email="alex@botshare.ai">BotshareAI</maintainer>
+  <maintainer email="info@botshare.ai">Botshare LTD</maintainer>
   <license>MIT</license>
 
   <!-- Build system -->
