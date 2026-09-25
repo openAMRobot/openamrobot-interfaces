@@ -19,6 +19,8 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Resolve ROS dependencies
         run: |
@@ -33,6 +35,8 @@ jobs:
           rosdep install --from-paths ros2 --ignore-src --rosdistro jazzy -y
 
       - name: Verify interfaces and consumers
+        env:
+          VERIFY_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: bash tools/verify.sh
 
       - name: Upload build evidence
@@ -47,6 +51,9 @@ jobs:
             .verification/run.*/navigation-exchange.log
             .verification/run.*/reverted-consumer.log
             .verification/run.*/reverted-interface.patch
+            .verification/run.*/interface-snapshot.json
+            .verification/run.*/compatibility.json
+            .verification/run.*/compatibility.log
             .verification/run.*/producer-retired/log/
             .verification/run.*/producer/log/
             .verification/run.*/consumer/log/

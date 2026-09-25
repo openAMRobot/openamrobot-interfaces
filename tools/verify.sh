@@ -9,7 +9,7 @@ stage=prerequisites
 finish() {
   result=$?
   if [ "$result" -eq 0 ]; then
-    echo "PASS: build, generated interfaces, clean consumer, message exchange, and reverted-interface rejection" | tee "$run/result.txt"
+    echo "PASS: all implemented verification stages" | tee "$run/result.txt"
   else
     echo "FAIL: $stage (exit $result)" | tee "$run/result.txt"
   fi
@@ -56,6 +56,16 @@ clean_bash -c '
   source "$1/underlay/local_setup.bash"
   python3 "$2/tools/verify_interfaces.py" "$1/producer-retired/src"
 ' verify "$run" "$root" | tee "$run/generated-interfaces.log"
+
+stage=interface-compatibility
+clean_bash -c '
+  source /opt/ros/jazzy/setup.bash
+  source "$1/underlay/local_setup.bash"
+  python3 "$2/tools/check_compatibility.py" --source "$2/ros2" \
+    --baseline "$2/compatibility/jazzy.json" --base-ref "$3" \
+    --output "$1/interface-snapshot.json" --report "$1/compatibility.json"
+  python3 "$2/tools/run_verification_tests.py" "$2/tests" test_compatibility.py
+' verify "$run" "$root" "${VERIFY_BASE_REF:-HEAD^}" 2>&1 | tee "$run/compatibility.log"
 
 stage=clean-consumer-build
 mkdir -p "$run/consumer/src"

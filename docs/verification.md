@@ -114,6 +114,9 @@ maintainer approval may be required by GitHub's Actions policy.
 
 ## Remaining Issue #6 scope
 
+The shared command also runs [compatibility/version validation](compatibility.md),
+including generated type-hash snapshots, version rules and regression tests.
+
 This extends the first build gate in [Issue #6](https://github.com/openAMRobot/openamrobot-interfaces/issues/6).
-Lint/schema validation and compatibility/version checks remain unimplemented.
+Lint/schema validation remains a separate follow-up in PR #13.
 This command does not report those checks as passing or claim release readiness.

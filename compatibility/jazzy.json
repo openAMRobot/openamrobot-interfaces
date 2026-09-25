@@ -1,0 +1,619 @@
+{
+  "format_version": 1,
+  "packages": {
+    "openamr_nav_msgs": {
+      "interfaces": {
+        "msg/ActiveConstraint": {
+          "constants": {
+            "msg/TYPE_COLLISION_APPROACH": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/TYPE_REVERSE_LIMIT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/TYPE_SPEED_LIMIT": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/TYPE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_cbfb6630c964ff07cce8a799e587ee7bb08a71d2d56938c926b650bfc26fae1a"
+        },
+        "msg/DockingStatus": {
+          "constants": {
+            "msg/ACTIVITY_DOCKING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/ACTIVITY_FAILED": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/ACTIVITY_NONE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/ACTIVITY_UNDOCKING": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/ACTIVITY_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/ENGAGEMENT_DOCKED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/ENGAGEMENT_NOT_DOCKED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/ENGAGEMENT_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/PHASE_APPROACH": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/PHASE_FINAL": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/PHASE_NONE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/PHASE_NORMAL_ESTIMATE": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/PHASE_SCAN": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/PHASE_STAGING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/PHASE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_2620f8a616dcb1a3144bf93a7e0361089f48f7f87af7d0dbbd17a5da7ba1caca"
+        },
+        "msg/LocalizationStatus": {
+          "constants": {
+            "msg/HEALTH_DEGRADED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/HEALTH_FAULT": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/HEALTH_OK": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/HEALTH_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/STATE_DEGRADED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_LOST": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_OK": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_f5a05b28ee0b7c650fd5ede3f8d0f9397fb7e8010888b5ab7b54b52152806b2b"
+        },
+        "msg/MotionSourceCoverage": {
+          "constants": {
+            "msg/COVERAGE_PARTIAL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/COVERAGE_PROTECTED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/COVERAGE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/COVERAGE_UNPROTECTED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SOURCE_DOCKING": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/SOURCE_NAV_CONTROLLER": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SOURCE_PARKING": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/SOURCE_RECOVERY": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SOURCE_TELEOP": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/SOURCE_UNDOCK_REVERSE": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/SOURCE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_fc921e1e09404815b8f112e8c0171eebe5dd0b24eea334eeb97d2c1dc2449007"
+        },
+        "msg/NavStackStatus": {
+          "constants": {
+            "msg/STATE_ACTIVE": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_FAILED": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/STATE_NOT_STARTED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_RESETTING": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_STARTING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_e8b4142d2880dcd228db8743730ef13c362f4523460f459b0881783815e5e056"
+        },
+        "msg/NavTaskStatus": {
+          "constants": {
+            "msg/STATE_ABORTED": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/STATE_ACTIVE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_CANCELED": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/STATE_IDLE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_RECOVERING": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_SUCCEEDED": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_201c859d2754f32976ca03f5026a9b48ee6a57f282f9e9a8d47da260b2f913c6"
+        },
+        "msg/NavigationStatus": {
+          "constants": {
+            "msg/BASE_LINK_LOST": {
+              "type": "uint16",
+              "value": 9001
+            },
+            "msg/BASE_NOT_READY": {
+              "type": "uint16",
+              "value": 9002
+            },
+            "msg/BATTERY_LOW": {
+              "type": "uint16",
+              "value": 9004
+            },
+            "msg/COLLISION_LAYER_INACTIVE": {
+              "type": "uint16",
+              "value": 6001
+            },
+            "msg/CONTRACT_VERSION": {
+              "type": "uint16",
+              "value": 1
+            },
+            "msg/CONTROLLER_TIMEOUT": {
+              "type": "uint16",
+              "value": 4006
+            },
+            "msg/DOCK_ALIGNMENT_FAILED": {
+              "type": "uint16",
+              "value": 7003
+            },
+            "msg/DOCK_ENGAGEMENT_UNKNOWN": {
+              "type": "uint16",
+              "value": 7001
+            },
+            "msg/DOCK_REASON_UNSPECIFIED": {
+              "type": "uint16",
+              "value": 7008
+            },
+            "msg/DOCK_STAGING_FAILED": {
+              "type": "uint16",
+              "value": 7005
+            },
+            "msg/DOCK_TAGS_NOT_VISIBLE": {
+              "type": "uint16",
+              "value": 7002
+            },
+            "msg/DOCK_TIMEOUT": {
+              "type": "uint16",
+              "value": 7004
+            },
+            "msg/ESTOP_ACTIVE": {
+              "type": "uint16",
+              "value": 9003
+            },
+            "msg/GOAL_BLOCKED": {
+              "type": "uint16",
+              "value": 4002
+            },
+            "msg/GOAL_OUTSIDE_MAP": {
+              "type": "uint16",
+              "value": 4001
+            },
+            "msg/HEALTH_DEGRADED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/HEALTH_FAULT": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/HEALTH_OK": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/HEALTH_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/LOCALIZATION_NOT_INITIALIZED": {
+              "type": "uint16",
+              "value": 3001
+            },
+            "msg/LOCALIZATION_PAUSED_FOR_DOCKING": {
+              "type": "uint16",
+              "value": 3004
+            },
+            "msg/LOCALIZATION_STALE_WHILE_MOVING": {
+              "type": "uint16",
+              "value": 3003
+            },
+            "msg/LOCALIZATION_UNCERTAIN": {
+              "type": "uint16",
+              "value": 3002
+            },
+            "msg/LOCAL_BLOCKED": {
+              "type": "uint16",
+              "value": 4008
+            },
+            "msg/MOTION_SOURCE_UNPROTECTED": {
+              "type": "uint16",
+              "value": 6002
+            },
+            "msg/NAVIGATION_READINESS_NOT_READY": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/NAVIGATION_READINESS_READY": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/NAV_CONFIG_FAULT": {
+              "type": "uint16",
+              "value": 1005
+            },
+            "msg/NAV_NODE_INACTIVE": {
+              "type": "uint16",
+              "value": 1004
+            },
+            "msg/NAV_STACK_NOT_STARTED": {
+              "type": "uint16",
+              "value": 1001
+            },
+            "msg/NAV_STACK_RESETTING": {
+              "type": "uint16",
+              "value": 1003
+            },
+            "msg/NAV_STACK_STARTING": {
+              "type": "uint16",
+              "value": 1002
+            },
+            "msg/NAV_UNKNOWN_FAULT": {
+              "type": "uint16",
+              "value": 4009
+            },
+            "msg/NONE": {
+              "type": "uint16",
+              "value": 0
+            },
+            "msg/NO_VALID_PATH": {
+              "type": "uint16",
+              "value": 4004
+            },
+            "msg/PARKING_NOT_IMPLEMENTED": {
+              "type": "uint16",
+              "value": 8003
+            },
+            "msg/PARK_POSE_MISSED": {
+              "type": "uint16",
+              "value": 8002
+            },
+            "msg/PARK_TARGET_UNREACHABLE": {
+              "type": "uint16",
+              "value": 8001
+            },
+            "msg/PLANNER_TIMEOUT": {
+              "type": "uint16",
+              "value": 4005
+            },
+            "msg/PROTECTION_STATE_UNKNOWN": {
+              "type": "uint16",
+              "value": 6004
+            },
+            "msg/REAR_COVERAGE_UNAVAILABLE": {
+              "type": "uint16",
+              "value": 6003
+            },
+            "msg/RECOVERY_IN_PROGRESS": {
+              "type": "uint16",
+              "value": 5001
+            },
+            "msg/RECOVERY_LIMIT_REACHED": {
+              "type": "uint16",
+              "value": 5002
+            },
+            "msg/REVERSE_SPEED_LIMITED": {
+              "type": "uint16",
+              "value": 6006
+            },
+            "msg/SENSOR_DATA_INVALID": {
+              "type": "uint16",
+              "value": 2004
+            },
+            "msg/SENSOR_DATA_STALE": {
+              "type": "uint16",
+              "value": 2001
+            },
+            "msg/SENSOR_NOT_CONFIGURED": {
+              "type": "uint16",
+              "value": 2002
+            },
+            "msg/SENSOR_NO_DATA_YET": {
+              "type": "uint16",
+              "value": 2003
+            },
+            "msg/SENSOR_RATE_LOW": {
+              "type": "uint16",
+              "value": 2005
+            },
+            "msg/SPEED_LIMIT_ACTIVE": {
+              "type": "uint16",
+              "value": 6005
+            },
+            "msg/START_BLOCKED": {
+              "type": "uint16",
+              "value": 4003
+            },
+            "msg/STUCK": {
+              "type": "uint16",
+              "value": 4007
+            },
+            "msg/TF_UNAVAILABLE": {
+              "type": "uint16",
+              "value": 3005
+            },
+            "msg/UNDOCKING_BEFORE_GOAL": {
+              "type": "uint16",
+              "value": 7007
+            },
+            "msg/UNDOCK_FAILED": {
+              "type": "uint16",
+              "value": 7006
+            }
+          },
+          "type_hash": "RIHS01_7137c1af27b948f92166db373d12b1930fba5742b56245450882454ca79af105"
+        },
+        "msg/ParkingStatus": {
+          "constants": {
+            "msg/STATE_LEAVING": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_NOT_PARKED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_PARKED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_PARKING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_PARK_FAILED": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_c6e0a6998c5a4e0fcbe3038adccfa50a0895520a991f39f758f21f36211b83fd"
+        },
+        "msg/ProtectionStatus": {
+          "constants": {
+            "msg/COLLISION_MONITOR_ACTIVE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/COLLISION_MONITOR_INACTIVE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/COLLISION_MONITOR_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/REAR_COVERAGE_AVAILABLE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/REAR_COVERAGE_UNAVAILABLE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/REAR_COVERAGE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_52f4a22312649501d5762ba2f65c632a04ea5fe98d4c0b3433cd9c920a3265e3"
+        },
+        "msg/RecoveryStatus": {
+          "constants": {
+            "msg/ACTION_BACKUP": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/ACTION_CLEAR_COSTMAP": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/ACTION_NONE": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/ACTION_SPIN": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/ACTION_WAIT": {
+              "type": "uint8",
+              "value": 3
+            }
+          },
+          "type_hash": "RIHS01_945340b91c9847a7f2d423754d745577411f16b62ace69402554e07152321050"
+        },
+        "msg/SensorStatus": {
+          "constants": {
+            "msg/KIND_DEPTH_CAMERA": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/KIND_IMU": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/KIND_LIDAR": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/KIND_ODOMETRY": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/KIND_TOF": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/KIND_ULTRASONIC": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/KIND_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/STATE_ABSENT": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_DEGRADED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_OK": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_STALE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_22dd3f90ae89de88458a37d3e6fcef83fac8c0c4f6f5b764642a5ddc7de76c61"
+        }
+      },
+      "package_version": "0.0.0"
+    },
+    "openamr_ui_msgs": {
+      "interfaces": {
+        "action/MoveBase": {
+          "constants": {},
+          "type_hash": "RIHS01_b994ca4af1666c2198f54e0b32d1c3f36668ee7b6a9bd70cb297e9e766aae695"
+        },
+        "msg/ArrayPoseStampedWithCovariance": {
+          "constants": {},
+          "type_hash": "RIHS01_007a54508682cf730430d7904b1e790b3cb6ceb81568ac98573e5f0efa393597"
+        }
+      },
+      "package_version": "0.0.0"
+    }
+  },
+  "ros_distro": "jazzy"
+}
