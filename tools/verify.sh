@@ -9,7 +9,7 @@ stage=prerequisites
 finish() {
   result=$?
   if [ "$result" -eq 0 ]; then
-    echo "PASS: build, generated interfaces, clean consumer, message exchange, and reverted-interface rejection" | tee "$run/result.txt"
+    echo "PASS: all implemented verification stages" | tee "$run/result.txt"
   else
     echo "FAIL: $stage (exit $result)" | tee "$run/result.txt"
   fi
@@ -35,6 +35,13 @@ clean_bash -c '
   command -v rosdep
   rosdep check --from-paths "$1/ros2" --ignore-src --rosdistro jazzy
 ' verify "$root"
+
+stage=lint-and-schema
+clean_bash -c '
+  source /opt/ros/jazzy/setup.bash
+  python3 "$1/tools/lint_schemas.py" --root "$1" --report "$2/lint-schema.json"
+  python3 "$1/tools/run_verification_tests.py" "$1/tests" test_schema_validation.py
+' verify "$root" "$run" 2>&1 | tee "$run/lint-schema.log"
 
 stage=interface-build
 mkdir -p "$run/producer/src"

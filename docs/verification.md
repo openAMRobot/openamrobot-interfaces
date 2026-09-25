@@ -18,7 +18,7 @@ Install verification tools and manifest dependencies once, from the checkout:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3-colcon-common-extensions python3-rosdep
+sudo apt-get install -y python3-colcon-common-extensions python3-rosdep python3-jsonschema python3-yaml
 # Only on machines where rosdep has not been initialized:
 sudo rosdep init
 rosdep update --rosdistro jazzy
@@ -114,6 +114,9 @@ maintainer approval may be required by GitHub's Actions policy.
 
 ## Remaining Issue #6 scope
 
+The shared command runs [interface lint and schema validation](schema-validation.md)
+before building, including rejection tests and explicit JSON/YAML coverage.
+
 This extends the first build gate in [Issue #6](https://github.com/openAMRobot/openamrobot-interfaces/issues/6).
-Lint/schema validation and compatibility/version checks remain unimplemented.
+Compatibility/version validation remains a separate follow-up in PR #12.
 This command does not report those checks as passing or claim release readiness.
