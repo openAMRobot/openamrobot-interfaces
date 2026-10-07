@@ -335,6 +335,10 @@
               "type": "uint16",
               "value": 4008
             },
+            "msg/MOTION_SOURCE_PARTIALLY_PROTECTED": {
+              "type": "uint16",
+              "value": 6007
+            },
             "msg/MOTION_SOURCE_UNPROTECTED": {
               "type": "uint16",
               "value": 6002
