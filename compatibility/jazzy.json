@@ -251,6 +251,10 @@
               "type": "uint16",
               "value": 9004
             },
+            "msg/COLLISION_APPROACH_ACTIVE": {
+              "type": "uint16",
+              "value": 6008
+            },
             "msg/COLLISION_LAYER_INACTIVE": {
               "type": "uint16",
               "value": 6001
