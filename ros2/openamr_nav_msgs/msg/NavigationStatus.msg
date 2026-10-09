@@ -80,6 +80,7 @@ uint16 PROTECTION_STATE_UNKNOWN=6004
 uint16 SPEED_LIMIT_ACTIVE=6005
 uint16 REVERSE_SPEED_LIMITED=6006
 uint16 MOTION_SOURCE_PARTIALLY_PROTECTED=6007   # PARTIAL collision-monitor coverage, distinct from fully UNPROTECTED
+uint16 COLLISION_APPROACH_ACTIVE=6008           # collision_monitor's "approach" polygon has triggered
 
 # docking
 uint16 DOCK_ENGAGEMENT_UNKNOWN=7001
