@@ -151,6 +151,8 @@ Diagnostics only, as issue 30 and E-01 require:
 
 `SAFETY_STOPPED` is derived only from `safety_ok == OPEN` in a fresh message. A pressed-button
 observation without `OPEN` is reported as a diagnostic mismatch, not as `SAFETY_STOPPED`.
+Whether `safety_ok == OPEN` caused by charging is `SAFETY_STOPPED` is not settled; it is
+pending Q8 (section 4.1).
 
 ### 2.7 Reason code groups
 
@@ -214,9 +216,16 @@ Rules:
 
 ## 4. Robot ready, kept separate from navigation readiness
 
-`robot_readiness` (NOT_READY by default, READY) answers one question: may the robot accept a
-new motion command of any kind now. It is an explicit AND, and the roll-up lists every unmet
-term in `not_ready_reasons`:
+This section separates two things:
+
+- **Global `robot_readiness`** (this section): is the whole robot ready to run tasks.
+- **Per-subsystem goal admissibility** (section 4.3): may one specific goal for one subsystem
+  be accepted now. For task goals, admissibility includes `robot_readiness`. For the recovery
+  goals of section 4.3 it does not.
+
+`robot_readiness` (NOT_READY by default, READY) answers one question: is the robot ready to
+run tasks now. It is an explicit AND, and the roll-up lists every unmet term in
+`not_ready_reasons`:
 
 1. All sources required by the active profile are fresh and not `UNKNOWN`.
 2. Hardwired chain `safety_ok == CLOSED` in a fresh message.
@@ -232,8 +241,9 @@ term in `not_ready_reasons`:
 
 Navigation readiness stays in `NavigationStatus.navigation_readiness` and is not an input to
 `robot_readiness`, and `robot_readiness` is not fed back into `NavigationStatus`. A navigation
-goal needs both; an arm or lift goal needs `robot_readiness` and its own authority check. The UI
-shows them as two separate signals. This keeps CONTRACT.md's statement that navigation status is
+goal needs both. An arm, gripper or lift task goal needs `robot_readiness` and a grant from the
+motion arbiter. An arm recovery goal follows section 4.3 instead. The UI shows navigation
+readiness and robot readiness as two separate signals. This keeps CONTRACT.md's statement that navigation status is
 not whole-robot readiness true.
 
 ### 4.1 Robot state
@@ -242,9 +252,10 @@ The roll-up publishes one `robot_state`. The first matching row wins:
 
 | Robot state | Condition |
 |---|---|
-| `SAFETY_STOPPED` | fresh `safety_ok == OPEN` (any cause, including charging) |
+| pending Q8 (platform and safety owners) | fresh `safety_ok == OPEN` while fresh `charge_inhibit_active` is true (the chain is open because of charging). Not a settled rule. The alternatives are `SAFETY_STOPPED` with diagnosis `CHARGE_INHIBIT`, or a separate presentation; Q8 decides. Whichever is chosen, term 2 keeps `robot_readiness` NOT_READY and no motion goal is admissible, because the actuators are unpowered |
+| `SAFETY_STOPPED` | fresh `safety_ok == OPEN` in every other case |
 | `FAULTED` | any latched fault in a required source, or a Stop not confirmed (section 5) |
-| `NEEDS_ASSISTANCE` | a condition only a person clears: recovery limit reached, a task aborted with a reason marked operator-required, lift position not valid after the seek timed out |
+| `NEEDS_ASSISTANCE` | a condition only a person clears: recovery limit reached, a task aborted with a reason marked operator-required, lift position not valid after the seek timed out, an arm healthy but outside a safe pose with no goal active (it needs a recovery goal, section 4.3) |
 | `RECOVERING` | a navigation recovery is running, or the lift is seeking its nearest stop |
 | `BLOCKED` | a goal is active but cannot progress: travel inhibited, authority held by another subsystem, software stop engaged during a goal, path blocked |
 | `EXECUTING` | an accepted goal is active (navigation, docking, arm, gripper, lift) |
@@ -268,6 +279,73 @@ its presentation state before showing the robot state:
 5. Otherwise the robot state as published.
 
 `SAFETY_STOPPED` is never shown from a UI-side guess, only from the published robot state.
+
+### 4.3 Goal admissibility per subsystem
+
+Term 6 of section 4 needs every required arm in `STOWED` or `CARRY`, and `ArmToNamedPose`
+(section 6) is the way an arm reaches those poses. If every arm goal needed
+`robot_readiness`, a healthy arm in any other pose could never be moved to a safe pose. Goal
+admissibility is therefore decided per goal and per subsystem, not by `robot_readiness` alone.
+
+**Task goals.** Navigation, docking, `LiftToStop`, gripper goals, and `ArmToNamedPose` to any
+pose other than the stowed and carry poses are admissible only when all of these hold:
+
+1. `robot_readiness == READY` (navigation goals also need `navigation_readiness`).
+2. The motion arbiter grants authority to the subsystem.
+
+Otherwise the goal is rejected with `NOT_READY` or the arbiter's reason.
+
+**Arm recovery goals.** `ArmToNamedPose` with `pose_name` `stowed` or `carry` (the SRDF named
+states for the `STOWED` and `CARRY` safe poses) is admissible
+even while `robot_readiness` is NOT_READY. It is admissible when all of these hold:
+
+1. The target pose is declared in the SRDF (Q7). Until Q7 declares the stowed and carry poses,
+   no recovery goal exists and this path is not available.
+2. The arm's own subsystem is healthy: its `/manipulation/arm_status` entry and its joint
+   states are fresh, `mode == HOLDING`, `controller_active`, `fault == HEALTH_OK`, and no latched
+   fault under that arm's source. With `arm: BOTH`, both arms must meet this.
+3. The motion arbiter grants `ARMS` authority. Under openamrobot-manipulation issue 24 the
+   arbiter refuses while the base is commanded or moving, and under P-03 items 14 and 15 while
+   the lift moves. It also refuses while the software stop is engaged, while `safety_ok` is not
+   `CLOSED` in a fresh message, and while any source it needs is stale.
+
+Faults, staleness and pose in other subsystems (lift, grippers, the other arm when `arm` names
+one side, configuration identity) do not block a recovery goal by themselves. They only block it
+when the arbiter's own rules use them.
+
+A recovery goal always goes through the motion arbiter and the hardware interlocks, never
+around them:
+
+- There is no bypass flag, override field or maintenance mode in this contract.
+- The firmware interlocks and the hardwired chain apply unchanged. If an interlock stops the
+  motion, the goal aborts with its reason.
+- While the recovery goal runs, the arbiter holds `ARMS` authority, so base commands are
+  refused with `ARM_MOTION_ACTIVE` and lift goals with `AUTHORITY_HELD`.
+- A Stop (software) or a hardwired stop aborts the recovery goal like any other goal.
+- A successful recovery goal does not make the robot ready by itself. It only meets term 6 for
+  that arm; every other term is still checked.
+
+**Worked example: an arm left outside a safe pose after a fault reset.**
+
+1. The left arm reported a fault during a task. Its fault latched, and the robot was `FAULTED`.
+2. The fault is reset. The left arm source publishes a fresh message with no fault, so the latch
+   clears (section 3, rule 4). The arm is `HOLDING`, controller active, `HEALTH_OK`, but
+   `in_safe_pose == NO`.
+3. `robot_readiness` is NOT_READY with `ARMS_NOT_IN_SAFE_POSE` (term 6). `robot_state` is
+   `NEEDS_ASSISTANCE`. The base is stopped, the lift is still, and the software stop is released.
+4. The operator sends `ArmToNamedPose` with `arm: LEFT` and `pose_name: stowed`. The pose is
+   declared, the left arm is healthy, and the arbiter grants `ARMS`. The goal is accepted and
+   `robot_state` is `EXECUTING`.
+5. While it runs, a base command is refused with `ARM_MOTION_ACTIVE`. A `LiftToStop` goal sent
+   at the same time is rejected with `NOT_READY`.
+6. The arm reaches the pose. The result is `SUCCEEDED` only when the joint error is within
+   tolerance on fresh joint states (section 6). The arm reports `in_safe_pose == STOWED`, and the
+   arbiter returns to `holder == NONE`.
+7. Term 6 is now met for the left arm. If every other term holds, `robot_readiness` becomes
+   READY and `robot_state` is `READY`.
+
+In the same situation, `ArmToNamedPose` to `home` is rejected with `NOT_READY`, because `home`
+is not a recovery pose.
 
 ## 5. Stop scope (for the platform lead and the safety owner)
 
@@ -321,7 +399,7 @@ register entry `UI-MANUAL-VELOCITY-INPUT` (Proposed), gated by the stop lock.
 | Action (proposed) | Goal | Feedback | Result |
 |---|---|---|---|
 | `LiftToStop` | `stop_id`: `L1000`, `L1175`, `L1350` | `position_m`, `at_stop`, `moving` | final `at_stop`, `position_m`, outcome, reason |
-| `ArmToNamedPose` | `arm`: `LEFT`, `RIGHT`, `BOTH`; `pose_name` from SRDF named states (`home`, `hands_up`, later stowed and carry) | progress 0 to 1, current joint error | outcome, reason, final joint error |
+| `ArmToNamedPose` | `arm`: `LEFT`, `RIGHT`, `BOTH`; `pose_name` from SRDF named states (`home`, `hands_up`, later `stowed` and `carry`, which are the recovery poses of section 4.3) | progress 0 to 1, current joint error | outcome, reason, final joint error |
 | `SetHeadLight` | `on`, `level` 0 to 1 | none | outcome, reason, resulting state |
 
 Common semantics:
@@ -330,7 +408,10 @@ Common semantics:
   `SAFETY_STOPPED`, `NOT_READY`, `AUTHORITY_HELD` (base moving, arm active, lift active),
   `ARMS_NOT_IN_SAFE_POSE` (lift), `UNKNOWN_TARGET`, `NOT_SUPPORTED` (capability absent in the
   profile, issue 7), `SOURCE_STALE`, `FAULT_LATCHED`, `CONFIGURATION_MISMATCH`, `BUSY`. A rejected
-  goal changes nothing. ROS 2 actions have no reason field on rejection, so the server accepts
+  goal changes nothing. `NOT_READY` applies to task goals only; an arm recovery goal is
+  admissible under section 4.3 and is rejected only with its own arm's reason or the arbiter's
+  reason (`AUTHORITY_HELD`, `SOFTWARE_STOP_ENGAGED`, `SAFETY_STOPPED`, `SOURCE_STALE`,
+  `FAULT_LATCHED`, `UNKNOWN_TARGET`). ROS 2 actions have no reason field on rejection, so the server accepts
   only goals it can run and reports a rejection through an immediate abort with the reason
   (Q9).
 - **Timeout:** the server owns a deadline per goal: lift 20 s by default (stop to stop is about
@@ -380,7 +461,7 @@ One robot-side record, published latched on `/robot/configuration`:
 | Q5 | Which repository publishes `lift_joint` into `/joint_states` from the I8 lift entry | I8 owner, arm status owner |
 | Q6 | Heartbeat and stale values in section 3 | I8 owner (base, lift), arm status owner (arms), contract owner (roll-up) |
 | Q7 | Joint values of the stowed and carry safe poses, and the tolerance for `in_safe_pose` | arm status owner, with the manipulation co-owner |
-| Q8 | Whether charging should be `SAFETY_STOPPED` with `CHARGE_INHIBIT` (as proposed) or a separate presentation | contract owner (platform lead) and safety owner |
+| Q8 | Whether `safety_ok == OPEN` because of charging is `SAFETY_STOPPED` with `CHARGE_INHIBIT` or a separate presentation. Section 4.1 marks this branch as pending Q8, not as a settled rule | contract owner (platform lead) and safety owner |
 | Q9 | Rejection pattern for actions: reject at the goal callback (no reason reaches the client) or accept and abort with a reason | arm status owner, contract owner; tech lead reviewer |
 | Q10 | Whole-robot Stop design: arm hold method, lift halt path over I8, gripper hold, confirmation timeout, release refusal conditions, lock state after a hardwired reset | contract owner (platform lead) and safety owner |
 | Q11 | Owner of the runtime configuration identity producer (PR 14 records none) | Embodied AI lead, with the arm status owner |
@@ -388,6 +469,9 @@ One robot-side record, published latched on `/robot/configuration`:
 | Q13 | Robot-ready term 8: must the lift be at a calibrated stop, or is any valid position enough | I8 owner, arm status owner |
 | Q14 | **Resolved 30 Oct 2026.** The platform lead is the contract owner of this readiness contract; the safety owner is the I8 owner, who leads hardware, firmware and the safety layer | none |
 | Q15 | Whether `MANIPULATION_READY` from issue 7 equals terms 6 to 8 of section 4 | arm status owner, manipulation co-owner |
+| Q16 | Section 4.3 defines recovery goals for arms only. Term 8 needs the lift at a calibrated stop and `LiftToStop` is a task goal, so a healthy lift between stops after the seek has timed out has the same kind of deadlock. Should `LiftToStop` to the nearest stop be a recovery goal, and under which arbiter conditions (P-03 item 14 needs the arms in a safe pose and the base stopped) | contract owner, I8 owner, arm status owner |
+| Q17 | Who may send an arm recovery goal: only an operator from the UI, or also an automatic recovery behaviour on the robot. Section 4.1 assumes an operator (`NEEDS_ASSISTANCE`) | contract owner, arm status owner |
+| Q18 | Must a recovery goal also need a matching configuration identity (term 10), so the stowed and carry joint values come from the expected description. Section 4.3 does not require it | contract owner, Embodied AI lead, arm status owner |
 
 ## Not verified
 
