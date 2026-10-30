@@ -17,6 +17,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 |---|---|---|---|
 | C10 dataset quality gate | PR #25 | draft / synthetic evidence only | Work-package owner reviews placement and supplies real-episode evidence |
 | Shared rules v2 (rollout step a, pilot) | PR #26 | in review | merge, then step (b) pin the harness |
+| Whole-robot status and stop scope proposal | branch proposal/robot-status (draft PR) | Proposed, docs only (2026-10-30) | owners accept or reject; no contract files until a contract change request |
 
 ## Decisions this repository implements
 
