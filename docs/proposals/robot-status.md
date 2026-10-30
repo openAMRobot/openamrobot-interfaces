@@ -21,29 +21,41 @@ Owner decisions of 30 October 2026, taken as given:
 - Stop scope target: one robot-side Stop (software) for base, arms and lift, designed by the
   platform lead and the safety owner. Until then it is labelled **base only**.
 
-Proposed owners (each pending that person's acceptance):
+These decisions are registered in openAMRobot/.github PR 73 (decisions.yaml, not merged at the
+time of writing):
 
-| Area | Proposed owner | Contract home |
+| Register entry | Status in the register | Used in |
 |---|---|---|
-| Readiness roll-up (`/robot/status`) | Kunal, after openamr-platform-sw PR 90 merges | to be decided (Q1) |
-| Base status, aux-device block, chain diagnostics | Evans (I8) | `openamr_base_msgs`, issue 30 |
-| Arm, gripper and motion-authority status | Adnan (I1) | I1 package, to be decided (Q1) |
-| Configuration identity consumers (C9, C10) | Satya (Embodied AI) | C9 contract |
-| Review | Mohamed | |
+| `STATUS-VOCABULARY` | recorded | sections 3, 4 and 4.2 |
+| `STOP-SCOPE` | recorded | section 5 |
+| `UI-MANUAL-VELOCITY-INPUT` | open (Proposed until openamr-platform-sw PR 90 merges) | sections 1, 5 and 6 |
+
+This proposal follows those entries and states no value that contradicts them. Where it adds
+detail beyond them, the detail is a proposal for the entry's owner.
+
+Roles (each pending acceptance by the person holding it):
+
+| Area | Role | Contract home |
+|---|---|---|
+| Readiness roll-up (`/robot/status`) and this readiness contract | contract owner, who is also the platform lead | decided by the contract owner (Q1) |
+| Base status, aux-device block, chain diagnostics, lift node | I8 owner, who is also the safety owner | `openamr_base_msgs`, issue 30 |
+| Arm, gripper and motion-authority status | arm status owner (I1) | decided by the contract owner (Q1) |
+| Configuration identity consumers (C9, C10) | Embodied AI lead | C9 contract |
+| Review | tech lead reviewer | |
 
 ## 1. What the sources define today
 
 | Source | What it defines today | What it leaves open |
 |---|---|---|
 | `openamr_nav_msgs` and its CONTRACT.md (this repository, main d048fb8) | `NavigationStatus` (contract version 1) aggregating stack, localization, sensors, task, recovery and protection; separate `DockingStatus` and `ParkingStatus`. Reliable, transient-local, depth 1, publish on change plus a 2 Hz heartbeat, staleness detected from silence. Enum value 0 is UNKNOWN (or the safe NOT_READY). Reason codes are append-only, grouped x001, 0 is NONE. Field validity rules per state. `ESTOP_ACTIVE` (9003) only on fresh I8 telemetry; stale or missing telemetry is `BASE_LINK_LOST` (9001) or `BASE_NOT_READY` (9002) and forces NOT_READY. Explicitly navigation only, not whole-robot readiness. | Topic names are proposals. No base status message exists yet. |
-| openamrobot-interfaces issue 30 (I8 `openamr_base_msgs`) | Scope of the package: base controller status with reset reason and the monotonic microsecond time base; a generic aux-device block (lift, head light, Getac power-good, chest E-stop status); E-stop and SAFETY_OK as diagnostics only; fault codes in a central registry here, base-controller codes owned by platform-fw; a CONTRACT.md in the `openamr_nav_msgs` style. Owner Evans. | Not on main. No field list, topic names or freshness values yet. Date to be agreed with the platform lead. |
+| openamrobot-interfaces issue 30 (I8 `openamr_base_msgs`) | Scope of the package: base controller status with reset reason and the monotonic microsecond time base; a generic aux-device block (lift, head light, Getac power-good, chest E-stop status); E-stop and SAFETY_OK as diagnostics only; fault codes in a central registry here, base-controller codes owned by platform-fw; a CONTRACT.md in the `openamr_nav_msgs` style. Owner: I8 owner. | Not on main. No field list, topic names or freshness values yet. Date to be agreed with the platform lead. |
 | openamr-platform-fw issue 10 (I8 architecture review) | STM32H723ZG base controller; FDCAN1 traction, FDCAN2 BMS, FDCAN3 auxiliary actuators; ZLAC8015D stops on loss of STM32 communication; IWDG fed only by the control loop; reset reason in BaseControllerStatus; 64-bit monotonic microsecond time base; micro-ROS over Ethernet; central fault registry. | Message content. |
 | openamr-platform-fw issue 6 | Base-controller side of E-stop observation, deliberate reset, actuator re-enable, brake and drive holding, validation before motion, safe recovery after restart, 15 s readiness target. Software never resumes motion after E-stop by itself. `ESTOP_ACTIVE` is not evidence of a safety implementation. | State machine and evidence not delivered. |
 | openamrobot-manipulation issue 7 | Names the states and reasons to define: `BASE_SETTLING`, `MANIPULATION_READY`, configurable thresholds and hold times, `ARM_MOTION_ACTIVE`, `ARMS_NOT_IN_TRAVEL_POSE`, deterministic travel-inhibition reasons, ownership per state between I1, I8, manipulation and navigation, safe rejection of unsupported capabilities. | Definitions, transitions and ownership not written. |
-| openamrobot-manipulation issue 24 (UC1-40) | Base and arms never move at the same time, enforced in the motion layer, not only the UI: arm goals refused while the base is commanded or moving, base commands refused during an arm trajectory, both with a typed reason; Stop and abort stay available. Owner Adnan, due 13 Nov 2026. | Arbiter location and reason codes. |
+| openamrobot-manipulation issue 24 (UC1-40) | Base and arms never move at the same time, enforced in the motion layer, not only the UI: arm goals refused while the base is commanded or moving, base commands refused during an arm trajectory, both with a typed reason; Stop and abort stay available. Owner: arm status owner, due 13 Nov 2026. | Arbiter location and reason codes. |
 | openamr-upperbody-sw PR 14 (draft, head 4629075) | Joint names `openarm_{left,right}_joint1..7`, `openarm_{left,right}_finger_joint1` (finger_joint2 is a mimic), `lift_joint` (prismatic, 0 to 0.350 m, no controller, outside arm control authority). Controllers `left_arm_controller`, `right_arm_controller` (JointTrajectoryController), `left_gripper_controller`, `right_gripper_controller` (GripperActionController), `joint_state_broadcaster`, 100 Hz; mock, gazebo and real profiles. SRDF named states `home` and `hands_up`. `upperbody_configuration.yaml`: axes column, base_plate, head_pitch, base_tilt; lift stops L1000, L1175, L1350 as calibration IDs; `datums.yaml` revision 2026-10-28.a feeds every `config_id`; `config_id` is a digest of a compact sorted-key JSON payload. The PR records that no runtime producer of the configuration identity has an owner. | Neither upperbody main nor PR 14 has a STATE.md. No stowed or carry pose is declared. |
 | openamr-platform-sw PR 90 (stop lock, changes requested 27 Oct) | `safety_stop_gate_node`: `/safety/stop_lock` (Bool), released only by `/safety/stop_lock_release` and engaged by `/safety/stop_lock_engage` (both `std_srvs/Trigger`); starts locked; zero on `cmd_vel_stop` while locked; post-mux gate forces zero on `cmd_vel_gated`; twist_mux lock timeout 0.3 s; `velocity_timeout` 0.3 s. Base velocity only. Functional stop, explicitly not the hardwired E-stop. | Arms and lift are outside it. UI wiring to the engage service unconfirmed. Not merged. |
-| P-03 rev20.1 item 24 | Lift node CTL-017 (Evans) on CAN3; three inductive stop sensors, one per stop L1000, L1175, L1350, on the always-on 24 V rail; a sensor active at power-up gives a valid position without homing; between stops the node moves slowly to the nearest sensor; each stop cross-checks the Hall count (F02); two active sensors is a fault; no duty-cycle limit in firmware; stop to stop about 10 s. Second E-stop on the rear of the static lift profile, spare NO to a lift-node input for diagnostics. Head light Falcon FLDL-i150x15-W, on/off and optional PWM by a lift-node low-side output, on F-PANEL so it stays on during an E-stop. Aux status is the generic aux-device block (CAN3 decision D17): motor current, target stop, stop sensors, head light, Getac power-good, future sensors, chest E-stop observation. | Message fields. |
+| P-03 rev20.1 item 24 | Lift node CTL-017 (I8 owner) on CAN3; three inductive stop sensors, one per stop L1000, L1175, L1350, on the always-on 24 V rail; a sensor active at power-up gives a valid position without homing; between stops the node moves slowly to the nearest sensor; each stop cross-checks the Hall count (F02); two active sensors is a fault; no duty-cycle limit in firmware; stop to stop about 10 s. Second E-stop on the rear of the static lift profile, spare NO to a lift-node input for diagnostics. Head light Falcon FLDL-i150x15-W, on/off and optional PWM by a lift-node low-side output, on F-PANEL so it stays on during an E-stop. Aux status is the generic aux-device block (CAN3 decision D17): motor current, target stop, stop sensors, head light, Getac power-good, future sensors, chest E-stop observation. | Message fields. |
 | P-03 rev20.1 items 14 and 15 (context) | Every auxiliary actuator is powered through the hardwired chain, with firmware interlocks: no motion while the base moves, while the arms are outside a safe pose, or on stale state. Lift motion only in the stowed or carry safe pose with the base stopped. Baseline head pitch hp30 since 28 Oct 2026. | Safe poses not yet declared in the model. |
 | E-01 rev1.5 | An E-stop cuts actuator power only (traction, both arms, lift) through PNOZ s3 and K1/K2; Jetson, controller, 5 V and regulated 24 V stay on. One RESET button: short press is the monitored PNOZ reset, motion still needs a command; 5 s hold reboots the electronics. Diagnostics, not safety: `SAFETY_OK` (Y32), `ESTOP_BASE`, `ESTOP_CHEST` (via the lift node over CAN3), `RESET_PRESSED`, `BMS_STATUS`, `WCM_FAULT`; "PNOZ did not enable" diagnosis after the reset timeout. Charging opens the PNOZ supply, so actuators are off while charging. Lift holds on E-stop and power loss (supplier written confirmation recorded in E-01); stop sensors stay readable after an E-stop. No bus carries a safety function. | |
 
@@ -58,15 +70,15 @@ groups, field validity stated per state.
 
 | Topic (proposed) | Content | Producer | Owner |
 |---|---|---|---|
-| `/base/status` | Base controller status: ready state, reset reason, time base, fault codes | base controller (micro-ROS) | Evans |
-| `/base/aux_status` | Aux-device block: lift entry, head light, Getac power-good, chest E-stop observation | base controller, relaying CTL-017 over CAN3 | Evans |
-| `/base/safety_chain` | Hardwired chain diagnostics (may be a block inside `/base/status`, Q3) | base controller | Evans |
-| `/joint_states` (existing) | `lift_joint` position from the I8 lift entry | adapter in platform-sw or upperbody-sw (Q5) | Evans data, Adnan consumer |
-| `/manipulation/arm_status` | One entry per arm and per gripper | manipulation status node | Adnan |
-| `/manipulation/motion_authority` | Who may move now, and why others are inhibited | motion arbiter of manipulation issue 24 | Adnan, base side Kunal |
+| `/base/status` | Base controller status: ready state, reset reason, time base, fault codes | base controller (micro-ROS) | I8 owner |
+| `/base/aux_status` | Aux-device block: lift entry, head light, Getac power-good, chest E-stop observation | base controller, relaying CTL-017 over CAN3 | I8 owner |
+| `/base/safety_chain` | Hardwired chain diagnostics (may be a block inside `/base/status`, Q3) | base controller | I8 owner |
+| `/joint_states` (existing) | `lift_joint` position from the I8 lift entry | adapter in platform-sw or upperbody-sw (Q5) | I8 owner (data), arm status owner (consumer) |
+| `/manipulation/arm_status` | One entry per arm and per gripper | manipulation status node | arm status owner |
+| `/manipulation/motion_authority` | Who may move now, and why others are inhibited | motion arbiter of manipulation issue 24 | arm status owner, base side contract owner |
 | `/robot/configuration` | Configuration identity record and hash (section 7) | robot-side configuration node | Q11 |
-| `/robot/status` | Robot state, robot readiness, reasons, per-source summary, stop scope | readiness roll-up | Kunal |
-| `/safety/stop_lock` (existing, PR 90) | Software stop lock | `safety_stop_gate_node` | Kunal |
+| `/robot/status` | Robot state, robot readiness, reasons, per-source summary, stop scope | readiness roll-up | contract owner |
+| `/safety/stop_lock` (existing, PR 90) | Software stop lock | `safety_stop_gate_node` | contract owner |
 
 ### 2.1 Arm status (per arm, `left` and `right`)
 
@@ -244,7 +256,8 @@ When no required source has been received, `robot_state` is `WAITING` with the r
 
 ### 4.2 UI presentation
 
-The UI derives its presentation state before showing the robot state:
+Per `STATUS-VOCABULARY`, these are UI presentation states, not robot states. The UI derives
+its presentation state before showing the robot state:
 
 1. `DISCONNECTED`: the UI has no link to the robot.
 2. `STALE`: `/robot/status` is older than its stale limit; last values greyed out.
@@ -261,6 +274,11 @@ The UI derives its presentation state before showing the robot state:
 This section states requirements and a proposed shape. The design and any implementation
 belong to the platform lead and the safety owner. An agent does not author it; the
 functional stop path needs two human approvals including the platform lead.
+
+Register: `STOP-SCOPE` (recorded) fixes the meaning and today's scope; the lock interface is
+`UI-MANUAL-VELOCITY-INPUT` (open): `/safety/stop_lock` (`std_msgs/Bool`, reliable, transient
+local), engaged by `/safety/stop_lock_engage` and released only by `/safety/stop_lock_release`
+(both `std_srvs/Trigger`). "E-stop" means only the hardwired buttons.
 
 **Today (PR 90, not merged):** the lock gates base velocity only. The UI button is labelled
 "Stop (software)" with the scope text **base only**. Arms and lift continue an active goal.
@@ -295,8 +313,10 @@ and is never described as an E-stop or as making the robot safe.
 
 ## 6. Future commands: actions only
 
-The UI commands motion only through actions with named targets. No joint jogging, no lift
-jogging and no per-joint position or velocity command from the UI.
+The UI commands arms, grippers, lift and head light only through actions with named
+targets. No joint jogging, no lift jogging and no per-joint position or velocity command from
+the UI. Manual base driving is outside this section: it stays the UI manual velocity input of
+register entry `UI-MANUAL-VELOCITY-INPUT` (Proposed), gated by the stop lock.
 
 | Action (proposed) | Goal | Feedback | Result |
 |---|---|---|---|
@@ -335,7 +355,7 @@ One robot-side record, published latched on `/robot/configuration`:
 |---|---|
 | `column` | `upperbody_configuration.yaml` (`dold_v4_350`, `tl3_400`) |
 | `base_plate` | `bp000`, `bp050` |
-| `head_pitch` | `hp15` to `hp35` |
+| `head_pitch` | `hp15` to `hp35`; baseline `hp30` (P-03 rev20.1, Q12 resolved) |
 | `base_tilt` | `bt05`, `bt10`, `bt15` |
 | `datums_revision` | `datums.yaml` `revision` |
 | `calibration_ids` | head camera per lift stop (L1000, L1175, L1350), base camera; the lift stops are calibration IDs, not configuration axes |
@@ -353,25 +373,26 @@ One robot-side record, published latched on `/robot/configuration`:
 
 | ID | Question | Owner |
 |---|---|---|
-| Q1 | Contract homes: `/robot/status` in a new `openamr_robot_msgs` package or elsewhere; arm and authority status in the I1 package or a manipulation package | software lead, review Mohamed |
-| Q2 | Where the central fault registry lives and how the 10001 to 17001 groups relate to platform-fw base codes | Evans, review Mohamed |
-| Q3 | Chain diagnostics as their own topic or a block inside `/base/status`; final topic names for I8 | Evans |
-| Q4 | May a producer restart alone clear a latched fault, or must a fault-free message follow a deliberate reset | Evans (base), Adnan (arms), Kunal (roll-up) |
-| Q5 | Which repository publishes `lift_joint` into `/joint_states` from the I8 lift entry | Evans, Adnan |
-| Q6 | Heartbeat and stale values in section 3 | Evans (base, lift), Adnan (arms), Kunal (roll-up) |
-| Q7 | Joint values of the stowed and carry safe poses, and the tolerance for `in_safe_pose` | Adnan, with Om |
-| Q8 | Whether charging should be `SAFETY_STOPPED` with `CHARGE_INHIBIT` (as proposed) or a separate presentation | safety owner, Evans |
-| Q9 | Rejection pattern for actions: reject at the goal callback (no reason reaches the client) or accept and abort with a reason | Adnan, Kunal, review Mohamed |
-| Q10 | Whole-robot Stop design: arm hold method, lift halt path over I8, gripper hold, confirmation timeout, release refusal conditions, lock state after a hardwired reset | platform lead, safety owner |
-| Q11 | Owner of the runtime configuration identity producer (PR 14 records none) | Satya, with Adnan |
-| Q12 | Baseline head pitch: P-03 rev20.1 says hp30 since 28 Oct 2026; `upperbody_configuration.yaml` on PR 14 still says hp25. Reported, not changed | owner of the configuration register (Alex), PR 14 author |
-| Q13 | Robot-ready term 8: must the lift be at a calibrated stop, or is any valid position enough | Evans, Adnan |
-| Q14 | Names of the platform lead and the safety owner for section 5 | Alex |
-| Q15 | Whether `MANIPULATION_READY` from issue 7 equals terms 6 to 8 of section 4 | Adnan, Om |
+| Q1 | Contract homes: `/robot/status` in a new `openamr_robot_msgs` package or elsewhere; arm and authority status in the I1 package or a manipulation package | contract owner decides; tech lead reviewer |
+| Q2 | Where the central fault registry lives and how the 10001 to 17001 groups relate to platform-fw base codes | I8 owner; tech lead reviewer |
+| Q3 | Chain diagnostics as their own topic or a block inside `/base/status`; final topic names for I8 | I8 owner |
+| Q4 | May a producer restart alone clear a latched fault, or must a fault-free message follow a deliberate reset | I8 owner (base), arm status owner (arms), contract owner (roll-up) |
+| Q5 | Which repository publishes `lift_joint` into `/joint_states` from the I8 lift entry | I8 owner, arm status owner |
+| Q6 | Heartbeat and stale values in section 3 | I8 owner (base, lift), arm status owner (arms), contract owner (roll-up) |
+| Q7 | Joint values of the stowed and carry safe poses, and the tolerance for `in_safe_pose` | arm status owner, with the manipulation co-owner |
+| Q8 | Whether charging should be `SAFETY_STOPPED` with `CHARGE_INHIBIT` (as proposed) or a separate presentation | contract owner (platform lead) and safety owner |
+| Q9 | Rejection pattern for actions: reject at the goal callback (no reason reaches the client) or accept and abort with a reason | arm status owner, contract owner; tech lead reviewer |
+| Q10 | Whole-robot Stop design: arm hold method, lift halt path over I8, gripper hold, confirmation timeout, release refusal conditions, lock state after a hardwired reset | contract owner (platform lead) and safety owner |
+| Q11 | Owner of the runtime configuration identity producer (PR 14 records none) | Embodied AI lead, with the arm status owner |
+| Q12 | **Resolved 30 Oct 2026.** Baseline head pitch is hp30 (P-03 rev20.1). The hp25 default in `upperbody_configuration.yaml` on PR 14 is stale; the PR 14 author fixes it there. Section 7 assumes hp30 | PR 14 author (fix) |
+| Q13 | Robot-ready term 8: must the lift be at a calibrated stop, or is any valid position enough | I8 owner, arm status owner |
+| Q14 | **Resolved 30 Oct 2026.** The platform lead is the contract owner of this readiness contract; the safety owner is the I8 owner, who leads hardware, firmware and the safety layer | none |
+| Q15 | Whether `MANIPULATION_READY` from issue 7 equals terms 6 to 8 of section 4 | arm status owner, manipulation co-owner |
 
 ## Not verified
 
 - No message, build, DDS or UI test exists for anything here; it is a design text.
-- The decisions register (decisions.yaml) was not read for this draft; owners check it for
-  conflicts before acceptance.
+- The register entries were read from openAMRobot/.github PR 73 as it stood on 30 Oct 2026;
+  this repository is not in their `applies_to` list, so `check_decisions.py` does not scan
+  this file in CI.
 - No physical robot, safety-chain, lift, arm or stopping-distance evidence is claimed.
