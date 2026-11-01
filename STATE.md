@@ -18,6 +18,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 |---|---|---|---|
 | C10 dataset quality gate | PR #25 | draft / synthetic evidence only | Work-package owner reviews placement and supplies real-episode evidence |
 | Shared rules v2 (rollout step a, pilot) | PR #26 | merged as d048fb8 (2026-10-22) | step (b) pin the harness |
+| 1 Nov 2026 alignment (openAMRobot/.github#79) | alignment/2026-11-01 (draft PR) | draft | work-package owner writes adopt, adapt or reject |
 
 ## Decisions this repository implements
 
