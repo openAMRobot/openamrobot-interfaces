@@ -21,7 +21,8 @@ subscribe to. It aggregates:
 
 `DockingStatus` and `ParkingStatus` are **separate top-level messages with
 separate producers**, not fields of `NavigationStatus`. No charging states
-live in either, since manual charging is the current release baseline.
+live in either: docking is positioning only and never establishes charging;
+the 2.0 charging path is the TZBOT WCM-500-24 wireless charger.
 
 See [CONTRACT.md](CONTRACT.md) for topics, producers, QoS, versioning, and
 field validity rules.
