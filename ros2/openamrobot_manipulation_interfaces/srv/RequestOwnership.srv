@@ -1,0 +1,30 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Requested ownership mode.
+uint8 NORMAL=0
+uint8 DECLARED_POLICY=1
+uint8 DIRECT_CONTROL=2
+uint8 requested_state
+
+# Client requesting ownership.
+string client_id
+
+# Requested lease duration in seconds.
+# The server enforces its configured lease-duration policy.
+float64 lease_duration_sec
+---
+# Outcome of the ownership request.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Whether ownership was granted.
+bool granted
+
+# UUID of the granted ownership lease.
+string lease_id
+
+# Expiration time of the granted lease.
+builtin_interfaces/Time lease_expires_at
+
+# Current owner when the request is not granted.
+string current_owner

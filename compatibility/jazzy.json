@@ -621,6 +621,330 @@
         }
       },
       "package_version": "0.0.0"
+    },
+    "openamrobot_manipulation_interfaces": {
+      "interfaces": {
+        "action/AbortTask": {
+          "constants": {
+            "feedback/RETRACTING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "feedback/STOPPING": {
+              "type": "uint8",
+              "value": 1
+            },
+            "feedback/STOWING": {
+              "type": "uint8",
+              "value": 3
+            },
+            "feedback/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "goal/RETRACT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "goal/STOP_ONLY": {
+              "type": "uint8",
+              "value": 1
+            },
+            "goal/STOW": {
+              "type": "uint8",
+              "value": 3
+            },
+            "goal/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_de15946f16d1b8691bd195e555458a331827cff04b8dbdf2b79d0fd97e6409f7"
+        },
+        "action/CartesianMotion": {
+          "constants": {},
+          "type_hash": "RIHS01_56c3d4717be06d52b8e36a5b4208bd7755de4d4a88c77ad6f187e4080cdabf97"
+        },
+        "action/CompliantHold": {
+          "constants": {},
+          "type_hash": "RIHS01_b1fbb050cf2da5aadbf77165eb84a111441444b7226a4db03c464aeaaed7ae5c"
+        },
+        "action/ExecutePlan": {
+          "constants": {},
+          "type_hash": "RIHS01_26997cca8314dd1014ffa2a409619f68b242ea4c51fefcf2d0c244cdc2dc73b3"
+        },
+        "action/GripperCommand": {
+          "constants": {
+            "goal/CLOSE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "goal/FORCE_LIMITED_CLOSE": {
+              "type": "uint8",
+              "value": 4
+            },
+            "goal/GOTO_POSITION": {
+              "type": "uint8",
+              "value": 3
+            },
+            "goal/OPEN": {
+              "type": "uint8",
+              "value": 1
+            },
+            "goal/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_1b51782c99382ebdc2b5d51c7de6a12165755c38d6419f97e4f00e51d58576ce"
+        },
+        "action/MoveToNamedPose": {
+          "constants": {},
+          "type_hash": "RIHS01_ee2113842cc57cd9f6d6fe7ed14ae551bc25e5edaabcef8c172f8255651f321f"
+        },
+        "action/MoveUntilContact": {
+          "constants": {
+            "goal/DIRECTION": {
+              "type": "uint8",
+              "value": 1
+            },
+            "goal/PLACEMENT_GOAL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "goal/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_114173752ba84b44da390ef915dee035bcaa51915f619292e388908473077b28"
+        },
+        "msg/ActionResult": {
+          "constants": {
+            "msg/ACTION_REJECTED": {
+              "type": "uint8",
+              "value": 10
+            },
+            "msg/ASSISTANCE_REQUIRED": {
+              "type": "uint8",
+              "value": 13
+            },
+            "msg/CONTACT_LIMIT": {
+              "type": "uint8",
+              "value": 7
+            },
+            "msg/EXECUTION_FAILED": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/GRASP_FAILED": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/NONE": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/OBJECT_DROPPED": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/OBSERVATION_INVALID": {
+              "type": "uint8",
+              "value": 9
+            },
+            "msg/OWNERSHIP_LOST": {
+              "type": "uint8",
+              "value": 11
+            },
+            "msg/PLANNING_FAILED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/SAFETY_STOPPED": {
+              "type": "uint8",
+              "value": 12
+            },
+            "msg/SUCCEEDED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/TIMEOUT": {
+              "type": "uint8",
+              "value": 8
+            },
+            "msg/UNREACHABLE": {
+              "type": "uint8",
+              "value": 2
+            }
+          },
+          "type_hash": "RIHS01_aaf4dca27a2d0402d9d779dab707d351a9e2a4a1089c74543add0599e8c51a90"
+        },
+        "msg/CommandContext": {
+          "constants": {},
+          "type_hash": "RIHS01_cc26770352bed895a6844839cf0d1d80bb9cb89c2b823ca9d7befe96277451d0"
+        },
+        "msg/ComplianceParameters": {
+          "constants": {},
+          "type_hash": "RIHS01_ae8136a7cd31553b5a715edbb594958ce9b01c7c2f77c501b388f6517d483328"
+        },
+        "msg/ManipulatorSelector": {
+          "constants": {
+            "msg/GROUP": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/MANIPULATOR": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_805040887afbd275d524932b8f0235d4a6dc94f9d9d09486ed3b66180f7d4d35"
+        },
+        "msg/OwnershipState": {
+          "constants": {
+            "msg/DECLARED_POLICY": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/DIRECT_CONTROL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/NORMAL": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_f4f33cf979860035d5d8a14c178b5ef010ee78efd71fc858c89792da46f3f5c5"
+        },
+        "msg/PlacementGoal": {
+          "constants": {},
+          "type_hash": "RIHS01_dd8a4564ce4680b66d8f546d7a8916633fe5d61f0112fa830c396411c8180a09"
+        },
+        "msg/PlanningConstraints": {
+          "constants": {},
+          "type_hash": "RIHS01_5c9dd18ef2621ec7d1a708ecdf292e91ecbfd8da1bdad4d20b24a8e0818092ce"
+        },
+        "msg/WorkspaceEnvelope": {
+          "constants": {
+            "msg/BOUNDING_BOX": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/REACH_RADIUS": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_384a7c515cbdfb1ab8f630bd303131ec8300b6f15396666ae8a029a6b7942d4f"
+        },
+        "srv/GetPlanPreview": {
+          "constants": {},
+          "type_hash": "RIHS01_7f0b155029738788aadaedfba9ca0c456e28db9748141d313071584029a80044"
+        },
+        "srv/Plan": {
+          "constants": {
+            "request/JOINT_STATE": {
+              "type": "uint8",
+              "value": 3
+            },
+            "request/PLACEMENT_GOAL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "request/POSE_NAME": {
+              "type": "uint8",
+              "value": 1
+            },
+            "request/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_d096e09451d22c5b61f9a21f4001ffe3f53bfc378d1fbd751b837104a7bc081e"
+        },
+        "srv/QueryCapabilities": {
+          "constants": {
+            "response/ACTUATOR_ESTIMATE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "response/DIRECT_FT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "response/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_f322a1960c1ec1ad0652faf8b5b63c91c780ac9316079d3180be74985c417ad1"
+        },
+        "srv/ReleaseOwnership": {
+          "constants": {},
+          "type_hash": "RIHS01_aaba4288c2a6f4c08562d44c35dd09b03cab56d5396ce3af3949469c2e629b54"
+        },
+        "srv/RenewOwnership": {
+          "constants": {},
+          "type_hash": "RIHS01_f10c25c82ba597f03e61e9d504b1d152e8b1a2992978a4f5fea897f0c1df15cb"
+        },
+        "srv/RequestOwnership": {
+          "constants": {
+            "request/DECLARED_POLICY": {
+              "type": "uint8",
+              "value": 1
+            },
+            "request/DIRECT_CONTROL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "request/NORMAL": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_ae06dd6a8bdb8495726e131b44efc61e4a8aecedf98faf4bcbee0e27fc295e47"
+        },
+        "srv/Stop": {
+          "constants": {
+            "request/ALL_ARMS": {
+              "type": "uint8",
+              "value": 2
+            },
+            "request/OPERATOR_STOP": {
+              "type": "uint8",
+              "value": 1
+            },
+            "request/SCOPE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "request/SUPERSEDED_BY_NEW_GOAL": {
+              "type": "uint8",
+              "value": 2
+            },
+            "request/THIS_ARM": {
+              "type": "uint8",
+              "value": 1
+            },
+            "request/UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_cac916745dc5bb3646745d55552b7f87acecb9134f71aaf29e8e143cfd9f3af9"
+        }
+      },
+      "package_version": "1.0.0"
     }
   },
   "ros_distro": "jazzy"

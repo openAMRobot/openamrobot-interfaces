@@ -1,0 +1,14 @@
+# Client holding the current lease.
+string client_id
+
+# UUID of the existing ownership lease.
+string lease_id
+---
+# Outcome of the renewal request.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Whether the lease was renewed.
+bool renewed
+
+# New lease expiration time.
+builtin_interfaces/Time new_lease_expires_at

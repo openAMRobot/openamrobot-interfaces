@@ -1,0 +1,29 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+uint8 UNKNOWN=0
+uint8 POSE_NAME=1
+uint8 PLACEMENT_GOAL=2
+uint8 JOINT_STATE=3
+uint8 target_type
+
+# Valid when target_type is POSE_NAME.
+string pose_name
+
+# Valid when target_type is PLACEMENT_GOAL.
+openamrobot_manipulation_interfaces/PlacementGoal placement_goal
+
+# Valid when target_type is JOINT_STATE.
+sensor_msgs/JointState joint_state
+
+bool has_constraints
+openamrobot_manipulation_interfaces/PlanningConstraints constraints
+
+# Zero means use the server-configured default.
+float64 timeout_sec
+---
+openamrobot_manipulation_interfaces/ActionResult result
+string plan_id
+trajectory_msgs/JointTrajectory planned_trajectory
+float64 estimated_duration_sec
+builtin_interfaces/Time plan_expires_at

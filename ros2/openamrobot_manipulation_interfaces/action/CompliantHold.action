@@ -1,0 +1,32 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Translational and rotational stiffness and damping parameters.
+openamrobot_manipulation_interfaces/ComplianceParameters compliance_params
+
+# Maximum permitted contact force in newtons.
+float64 max_force
+
+# Whether the compliant hold should continue indefinitely.
+bool hold_indefinitely
+
+# Hold duration in seconds. Used only when hold_indefinitely is false.
+float64 hold_duration_sec
+
+# Ownership lease authorizing this command.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of the compliant hold.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Total duration of the compliant hold in seconds.
+float64 total_hold_duration_sec
+---
+# Current measured force in newtons.
+geometry_msgs/Vector3 current_force
+
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Whether the compliant hold is currently active.
+bool holding

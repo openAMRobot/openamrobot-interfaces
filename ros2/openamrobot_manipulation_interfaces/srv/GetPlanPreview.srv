@@ -1,0 +1,11 @@
+# UUID identifying the previously generated plan.
+string plan_id
+---
+# Outcome of the preview request.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Planned trajectory associated with the requested plan.
+trajectory_msgs/JointTrajectory planned_trajectory
+
+# Time at which this plan expires.
+builtin_interfaces/Time expires_at

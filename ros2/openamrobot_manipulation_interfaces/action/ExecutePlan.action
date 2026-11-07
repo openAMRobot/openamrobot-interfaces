@@ -1,0 +1,33 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# UUID of the plan returned by the Plan service.
+string plan_id
+
+# Maximum permitted execution time in seconds.
+# Zero means use the server-configured default.
+float64 max_execution_time_sec
+
+# Ownership lease authorizing this execution.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of execution.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Final measured end-effector pose.
+geometry_msgs/PoseStamped final_pose
+
+# Actual execution duration in seconds.
+float64 actual_duration_sec
+---
+# Execution progress as a percentage from 0.0 to 100.0.
+float32 percent_complete
+
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Current measured joint positions and velocities.
+sensor_msgs/JointState current_joint_state
+
+# Estimated remaining execution time in seconds.
+float64 time_remaining_estimate_sec

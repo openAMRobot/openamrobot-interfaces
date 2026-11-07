@@ -1,0 +1,41 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+---
+# Outcome of the capability query.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# ID of the physical manipulator whose capabilities are reported.
+string manipulator_id
+
+# Supported manipulation action names.
+string[] supported_actions
+
+# Number of arm degrees of freedom, excluding the gripper.
+uint8 arm_dof
+
+# Whether the manipulator has a gripper.
+bool has_gripper
+
+# Gripper type identifier.
+string gripper_type
+
+# Available force/torque sensing method.
+uint8 UNKNOWN=0
+uint8 ACTUATOR_ESTIMATE=1
+uint8 DIRECT_FT=2
+uint8 force_torque_sensing
+
+# Whether compliant control is supported.
+bool has_compliant_control
+
+# Whether the rated payload value is known.
+bool rated_payload_kg_known
+
+# Rated payload in kilograms.
+float64 rated_payload_kg
+
+# Names of supported named poses.
+string[] named_poses_available
+
+# Supported workspace representation and limits.
+openamrobot_manipulation_interfaces/WorkspaceEnvelope workspace_envelope
