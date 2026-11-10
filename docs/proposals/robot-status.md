@@ -5,6 +5,12 @@ Documentation only: this proposal adds no message, service or action file and no
 Every topic, field, reason code and action named below is a proposal and changes only
 through a contract change request, as AGENTS.md requires.
 
+Revision of 10 Nov 2026: aligned with the I8 interface proposal rev 3, frozen on 6 Nov (issue 30),
+the I8 owner's answers of 4 Nov, the Q16 to Q18 decisions of 2 Nov, the owner decisions of 9 Nov
+(relay repository, charging representation, owners) and P-03 rev20.6 item 30 (D-05, D-11, D-13,
+D-14, D-15). Where this file and the issue 30 `.msg` files differ on a `/base/status` or
+`/base/aux_status` field, issue 30 wins and this file follows.
+
 Scope: OpenAMRobot 2.0 (base, approved-in-principle DOLD Hexalift V4 lift, two OpenArm 2.0
 arms, head light), Use_Case_1 baseline. This is functional status. It is not a safety
 function and is never safety evidence. The hardwired chain (PNOZ s3, K1 and K2) cuts traction,
@@ -37,8 +43,9 @@ Roles (each pending acceptance by the person holding it):
 
 | Area | Role | Contract home |
 |---|---|---|
-| Readiness roll-up (`/robot/status`) and this readiness contract | contract owner, who is also the platform lead | decided by the contract owner (Q1) |
-| Base status, aux-device block, chain diagnostics, lift node | I8 owner, who is also the safety owner | `openamr_base_msgs`, issue 30 |
+| Readiness roll-up (`/robot/status`) and platform-wide adoption of this contract | contract owner, who is also the platform lead | decided by the contract owner (Q1) |
+| Navigation semantics inside this contract (recovery, motion authority, configuration identity conditions, Q16 to Q18) | navigation owner | `openamr_nav_msgs` |
+| Base status with its chain diagnostics block, aux-device block, upper-body controller CTL-017; sign-off on firmware, charging and hardware diagnostics | I8 owner, who is also the safety owner | `openamr_base_msgs`, issue 30 |
 | Arm, gripper and motion-authority status | arm status owner (I1) | decided by the contract owner (Q1) |
 | Configuration identity consumers (C9, C10) | Embodied AI lead | C9 contract |
 | Review | tech lead reviewer | |
@@ -47,33 +54,33 @@ Roles (each pending acceptance by the person holding it):
 
 | Source | What it defines today | What it leaves open |
 |---|---|---|
-| `openamr_nav_msgs` and its CONTRACT.md (this repository, main d048fb8) | `NavigationStatus` (contract version 1) aggregating stack, localization, sensors, task, recovery and protection; separate `DockingStatus` and `ParkingStatus`. Reliable, transient-local, depth 1, publish on change plus a 2 Hz heartbeat, staleness detected from silence. Enum value 0 is UNKNOWN (or the safe NOT_READY). Reason codes are append-only, grouped x001, 0 is NONE. Field validity rules per state. `ESTOP_ACTIVE` (9003) only on fresh I8 telemetry; stale or missing telemetry is `BASE_LINK_LOST` (9001) or `BASE_NOT_READY` (9002) and forces NOT_READY. Explicitly navigation only, not whole-robot readiness. | Topic names are proposals. No base status message exists yet. |
-| openamrobot-interfaces issue 30 (I8 `openamr_base_msgs`) | Scope of the package: base controller status with reset reason and the monotonic microsecond time base; a generic aux-device block (lift, head light, Getac power-good, chest E-stop status); E-stop and SAFETY_OK as diagnostics only; fault codes in a central registry here, base-controller codes owned by platform-fw; a CONTRACT.md in the `openamr_nav_msgs` style. Owner: I8 owner. | Not on main. No field list, topic names or freshness values yet. Date to be agreed with the platform lead. |
+| `openamr_nav_msgs` and its CONTRACT.md (this repository, main 14912e1) | `NavigationStatus` (contract version 1) aggregating stack, localization, sensors, task, recovery and protection; separate `DockingStatus` and `ParkingStatus`. Reliable, transient-local, depth 1, publish on change plus a 2 Hz heartbeat, staleness detected from silence. Enum value 0 is UNKNOWN (or the safe NOT_READY). Reason codes are append-only, grouped x001, 0 is NONE. Field validity rules per state. `ESTOP_ACTIVE` (9003) only on fresh I8 telemetry; stale or missing telemetry is `BASE_LINK_LOST` (9001) or `BASE_NOT_READY` (9002) and forces NOT_READY. Explicitly navigation only, not whole-robot readiness. | Topic names are proposals. No base status message exists yet. |
+| openamrobot-interfaces issue 30 (I8 `openamr_base_msgs`) | Interface proposal rev 3 (4 Nov), frozen 6 Nov: `/base/status` (type `BaseStatus`) and `/base/aux_status` (type `BaseAuxStatus`); reliable, transient-local, depth 1, publish on change plus heartbeat; `/base/status` 10 Hz, stale after 0.5 s; `/base/aux_status` 5 Hz, stale after 0.6 s; freshness from local receipt time, header stamp (base controller monotonic time base) diagnostic only; boot identity and a `uint32` sequence number in every message; `contract_version` `uint16` from 1; base fault codes group 18001 owned by platform-fw, one registry in this repository; a restart never clears a latched fault; E-stop and SAFETY_OK are diagnostics only. Owner: I8 owner. | Field names, types and enum values: draft PR due 10 Nov, merge target 13 Nov. Open in rev 3 section 8: message set, controller-state and recovery semantics, fault lifecycle, registry format, reset-cause enum, `ResetBaseController.srv`. |
 | openamr-platform-fw issue 10 (I8 architecture review) | STM32H723ZG base controller; FDCAN1 traction, FDCAN2 BMS, FDCAN3 auxiliary actuators; ZLAC8015D stops on loss of STM32 communication; IWDG fed only by the control loop; reset reason in BaseControllerStatus; 64-bit monotonic microsecond time base; micro-ROS over Ethernet; central fault registry. | Message content. |
 | openamr-platform-fw issue 6 | Base-controller side of E-stop observation, deliberate reset, actuator re-enable, brake and drive holding, validation before motion, safe recovery after restart, 15 s readiness target. Software never resumes motion after E-stop by itself. `ESTOP_ACTIVE` is not evidence of a safety implementation. | State machine and evidence not delivered. |
 | openamrobot-manipulation issue 7 | Names the states and reasons to define: `BASE_SETTLING`, `MANIPULATION_READY`, configurable thresholds and hold times, `ARM_MOTION_ACTIVE`, `ARMS_NOT_IN_TRAVEL_POSE`, deterministic travel-inhibition reasons, ownership per state between I1, I8, manipulation and navigation, safe rejection of unsupported capabilities. | Definitions, transitions and ownership not written. |
 | openamrobot-manipulation issue 24 (UC1-40) | Base and arms never move at the same time, enforced in the motion layer, not only the UI: arm goals refused while the base is commanded or moving, base commands refused during an arm trajectory, both with a typed reason; Stop and abort stay available. Owner: arm status owner, due 13 Nov 2026. | Arbiter location and reason codes. |
-| openamr-upperbody-sw PR 14 (draft, head 4629075) | Joint names `openarm_{left,right}_joint1..7`, `openarm_{left,right}_finger_joint1` (finger_joint2 is a mimic), `lift_joint` (prismatic, 0 to 0.350 m, no controller, outside arm control authority). Controllers `left_arm_controller`, `right_arm_controller` (JointTrajectoryController), `left_gripper_controller`, `right_gripper_controller` (GripperActionController), `joint_state_broadcaster`, 100 Hz; mock, gazebo and real profiles. SRDF named states `home` and `hands_up`. `upperbody_configuration.yaml`: axes column, base_plate, head_pitch, base_tilt; lift stops L1000, L1175, L1350 as calibration IDs; `datums.yaml` revision 2026-10-28.a feeds every `config_id`; `config_id` is a digest of a compact sorted-key JSON payload. The PR records that no runtime producer of the configuration identity has an owner. | Neither upperbody main nor PR 14 has a STATE.md. No stowed or carry pose is declared. |
-| openamr-platform-sw PR 90 (stop lock, changes requested 27 Oct) | `safety_stop_gate_node`: `/safety/stop_lock` (Bool), released only by `/safety/stop_lock_release` and engaged by `/safety/stop_lock_engage` (both `std_srvs/Trigger`); starts locked; zero on `cmd_vel_stop` while locked; post-mux gate forces zero on `cmd_vel_gated`; twist_mux lock timeout 0.3 s; `velocity_timeout` 0.3 s. Base velocity only. Functional stop, explicitly not the hardwired E-stop. | Arms and lift are outside it. UI wiring to the engage service unconfirmed. Not merged. |
-| P-03 rev20.1 item 24 | Lift node CTL-017 (I8 owner) on CAN3; three inductive stop sensors, one per stop L1000, L1175, L1350, on the always-on 24 V rail; a sensor active at power-up gives a valid position without homing; between stops the node moves slowly to the nearest sensor; each stop cross-checks the Hall count (F02); two active sensors is a fault; no duty-cycle limit in firmware; stop to stop about 10 s. Second E-stop on the rear of the static lift profile, spare NO to a lift-node input for diagnostics. Head light Falcon FLDL-i150x15-W, on/off and optional PWM by a lift-node low-side output, on F-PANEL so it stays on during an E-stop. Aux status is the generic aux-device block (CAN3 decision D17): motor current, target stop, stop sensors, head light, Getac power-good, future sensors, chest E-stop observation. | Message fields. |
-| P-03 rev20.1 items 14 and 15 (context) | Every auxiliary actuator is powered through the hardwired chain, with firmware interlocks: no motion while the base moves, while the arms are outside a safe pose, or on stale state. Lift motion only in the stowed or carry safe pose with the base stopped. Baseline head pitch hp30 since 28 Oct 2026. | Safe poses not yet declared in the model. |
-| E-01 rev1.5 | An E-stop cuts actuator power only (traction, both arms, lift) through PNOZ s3 and K1/K2; Jetson, controller, 5 V and regulated 24 V stay on. One RESET button: short press is the monitored PNOZ reset, motion still needs a command; 5 s hold reboots the electronics. Diagnostics, not safety: `SAFETY_OK` (Y32), `ESTOP_BASE`, `ESTOP_CHEST` (via the lift node over CAN3), `RESET_PRESSED`, `BMS_STATUS`, `WCM_FAULT`; "PNOZ did not enable" diagnosis after the reset timeout. Charging opens the PNOZ supply, so actuators are off while charging. Lift holds on E-stop and power loss (supplier written confirmation recorded in E-01); stop sensors stay readable after an E-stop. No bus carries a safety function. | |
+| openamr-upperbody-sw PR 14 (merged 1 Nov 2026, 4629075) | Joint names `openarm_{left,right}_joint1..7`, `openarm_{left,right}_finger_joint1` (finger_joint2 is a mimic), `lift_joint` (prismatic, 0 to 0.350 m, no controller, outside arm control authority). Controllers `left_arm_controller`, `right_arm_controller` (JointTrajectoryController), `left_gripper_controller`, `right_gripper_controller` (GripperActionController), `joint_state_broadcaster`, 100 Hz; mock, gazebo and real profiles. SRDF named states `home` and `hands_up`. `upperbody_configuration.yaml`: axes column, base_plate, head_pitch, base_tilt; lift stops L1000, L1175, L1350 as calibration IDs; `datums.yaml` revision 2026-10-28.a feeds every `config_id`; `config_id` is a digest of a compact sorted-key JSON payload. The PR records that no runtime producer of the configuration identity has an owner. | Neither upperbody main nor PR 14 has a STATE.md. No stowed or carry pose is declared. |
+| openamr-platform-sw PR 90 (stop lock, open; changes requested again 9 Nov) | `safety_stop_gate_node`: `/safety/stop_lock` (Bool), released only by `/safety/stop_lock_release` and engaged by `/safety/stop_lock_engage` (both `std_srvs/Trigger`); starts locked; zero on `cmd_vel_stop` while locked; post-mux gate forces zero on `cmd_vel_gated`; twist_mux lock timeout 0.3 s; `velocity_timeout` 0.3 s. Base velocity only. Functional stop, explicitly not the hardwired E-stop. Stop state telemetry is the proposed `StopState` message (this repository, PR 35); the mux lock itself stays `/safety/stop_lock`. | Arms and lift are outside it. UI wiring to the engage service unconfirmed. Not merged. |
+| P-03 rev20.6 items 24, 28 and 29, item 30 A7 (D-11) | Upper-body controller CTL-017: a separate NUCLEO-G474RE with the IFX007T H-bridge shield on CAN3 (CANopenNode, 500 kbit/s, node 0x10). The base controller relays its commands and status; the Jetson never talks to CAN3. Three SICK IME12-04BNSZC0S (NPN NO) stop sensors, one per stop L1000, L1175, L1350, on the always-on 24 V rail; a sensor active at power-up gives a valid position without homing; between stops CTL-017 moves slowly to the nearest sensor; each stop cross-checks the Hall count (F02); two active sensors is a fault; travel-timeout and Hall-window checks; no duty-cycle limit; stop to stop about 10 s. Second E-stop on top of the moving adapter plate (item 28), spare NO to a CTL-017 input for diagnostics. Head light Falcon FLDL-i150x15-W on a CTL-017 low-side output, on only during arm operations, on F-PANEL so it stays on during an E-stop. Getac power-good, and Getac power or charging enable. Aux status is the generic aux-device block (CAN3 decision D17). | Message fields: issue 30; lift contract due 11 Nov. |
+| P-03 rev20.6 items 14 and 15 (context) | Every auxiliary actuator is powered through the hardwired chain, with firmware interlocks: no motion while the base moves, while the arms are outside a safe pose, or on stale state. Lift motion only in the stowed or carry safe pose with the base stopped. Baseline head pitch hp30 since 28 Oct 2026. | Safe poses not yet declared in the model. |
+| E-01 rev1.6 | An E-stop cuts actuator power only (traction, both arms, lift) through PNOZ s3 and K1/K2; Jetson, controller, 5 V and regulated 24 V stay on. One RESET button: short press is the monitored PNOZ reset, motion still needs a command; 5 s hold reboots the electronics. Diagnostics, not safety: `SAFETY_OK` (Y32), `ESTOP_BASE`, `ESTOP_CHEST` (second E-stop, via CTL-017 over CAN3), `RESET_PRESSED`, `BMS_STATUS`, `WCM_FAULT`; "PNOZ did not enable" diagnosis after the reset timeout. Charging opens the PNOZ supply, so actuators are off while charging. Lift holds on E-stop and power loss (supplier written confirmation recorded in E-01); stop sensors stay readable after an E-stop. No bus carries a safety function. Build 1 has no wireless receiver and charges manually through SB50 (P-03 item 30, D-05), so `WCM_FAULT` has no source on Build 1. | |
 
-Source access note: P-03 rev20.1 and E-01 rev1.5 were read as the internal source documents;
+Source access note: P-03 rev20.6 and E-01 rev1.6 were read as the internal source documents;
 this public file cites them by name and revision only.
 
 ## 2. Producers and topics
 
-All names are proposals. Every message carries `std_msgs/Header`, a `contract_version`, and
-uses the `openamr_nav_msgs` conventions: enum 0 is UNKNOWN, reason 0 is NONE, append-only reason
-groups, field validity stated per state.
+All names are proposals except the two I8 topics frozen on 6 Nov, `/base/status` and `/base/aux_status`.
+Every message carries `std_msgs/Header` and a `contract_version` (`uint16`, from 1); `/base/*` messages also
+carry the I8 boot identity and a `uint32` sequence number. Messages use the `openamr_nav_msgs` conventions:
+enum 0 is UNKNOWN, reason 0 is NONE, append-only reason groups, field validity stated per state.
 
 | Topic (proposed) | Content | Producer | Owner |
 |---|---|---|---|
-| `/base/status` | Base controller status: ready state, reset reason, time base, fault codes | base controller (micro-ROS) | I8 owner |
-| `/base/aux_status` | Aux-device block: lift entry, head light, Getac power-good, chest E-stop observation | base controller, relaying CTL-017 over CAN3 | I8 owner |
-| `/base/safety_chain` | Hardwired chain diagnostics (may be a block inside `/base/status`, Q3) | base controller | I8 owner |
-| `/joint_states` (existing) | `lift_joint` position from the I8 lift entry | adapter in platform-sw or upperbody-sw (Q5) | I8 owner (data), arm status owner (consumer) |
+| `/base/status` (`BaseStatus`, frozen) | Base controller status: controller state, readiness, recovery required, reset reason, boot identity and sequence, applied command, fault entries (group 18001), and the hardwired chain diagnostics block (section 2.6) | base controller (micro-ROS) | I8 owner |
+| `/base/aux_status` (`BaseAuxStatus`, frozen) | Aux-device block: CTL-017 link, lift entry, head light, Getac power-good, second E-stop observation, reserved generic inputs | base controller, relaying CTL-017 over CAN3 | I8 owner |
+| `/joint_states` (existing) | `lift_joint` from the aux block, published only while `/base/aux_status` is fresh (0.6 s from local receipt), the CTL-017 link is `OK` and `position_valid` is true; otherwise nothing is published, never a held or default value. Firmware does not publish `/joint_states`. The MoveIt freshness guard and the real-profile integration that consume it live in openamr-upperbody-sw | host relay in openamr-platform-sw, next to the base status monitor (Q5) | I8 owner (data), arm status owner (consumer) |
 | `/manipulation/arm_status` | One entry per arm and per gripper | manipulation status node | arm status owner |
 | `/manipulation/motion_authority` | Who may move now, and why others are inhibited | motion arbiter of manipulation issue 24 | arm status owner, base side contract owner |
 | `/robot/configuration` | Configuration identity record and hash (section 7) | robot-side configuration node | Q11 |
@@ -104,25 +111,38 @@ groups, field validity stated per state.
 
 ### 2.3 Lift (inside the I8 aux-device block)
 
-- `position_m` on `lift_joint` (0 to 0.350 m), from the Hall count; `position_valid` (a stop
-  sensor was seen since power-up, or the node is at a sensor now).
-- `moving`, `direction`, `motor_current_a`.
+Names are proposals; issue 30 and the I8 lift contract (due 11 Nov) fix them.
+
+- `link`: `UNKNOWN`, `OK`, `LOST`, from the CTL-017 heartbeat as the base controller sees it (node lost after
+  300 ms, CAN3 v1). Every other lift field is meaningless unless `link == OK`.
+- `state`: the CTL-017 state (`INIT`, `UNHOMED`, `HOMING`, `IDLE`, `MOVING`, `STOPPING`, `FAULT`), 0 is UNKNOWN.
+  The slow move to the nearest stop sensor after power-up is `HOMING`.
+- `position_m` on `lift_joint`: 0.000 at the L1000 stop to 0.350 at L1350, the URDF and SRDF values, from the
+  Hall count. The offset from the lower end switch to the L1000 datum is a CTL-017 commissioning value; ROS
+  never applies it.
+- `position_valid`: false after CTL-017 power-up until a stop sensor or homing confirms the position, on Hall
+  supply loss and on an implausible pulse rate. There is no position-age field: measurement freshness was
+  replaced by node-side checks (CAN3 v1, 24 Oct).
+- `moving`, `direction`, `motor_current_a`, `motor_power_present` (functional status, not a safety signal).
 - `at_stop`: `UNKNOWN`, `NONE` (between stops), `L1000`, `L1175`, `L1350`.
 - `target_stop`: same enum, `NONE` when idle.
 - `stop_sensors`: three booleans in the order L1000, L1175, L1350, raw from the sensors.
-- `fault`, `reason`: covers two sensors active, Hall cross-check mismatch at a stop (F02), motor
-  over-current, lift node link lost.
-- `seeking_nearest_stop`: true while the node moves slowly to the nearest sensor after power-up.
+- `recovery_required`: CTL-017 is not homed.
+- Faults: the CTL-017 latched faults F01 to F08 and two stop sensors active, as subsystem-local codes (D19),
+  either as I8 fault entries with the lift as source or as a bitmask in this block; issue 30 decides. The
+  roll-up maps them to group 12001.
 
 The lift is described only as approved in principle. Its holding evidence, CAD and CAN3
 interface remain release gates.
 
-### 2.4 Head light, Getac and chest E-stop (aux-device block)
+### 2.4 Head light, Getac and second E-stop (aux-device block)
 
-- Head light: `state` (`UNKNOWN`, `OFF`, `ON`), `level` (0 to 1, 1 when not dimmed), `reason`.
+- Head light: `state` (`UNKNOWN`, `OFF`, `ON`), `level` (0 to 1, 1 when not dimmed), `fault`, `reason`.
 - Getac power-good: boolean with UNKNOWN.
-- Chest E-stop observation: `UNKNOWN`, `RELEASED`, `PRESSED`, from the spare NO at the lift node.
-  It is `UNKNOWN` whenever the lift node link is lost, even when `/base/status` is fresh.
+- Second E-stop observation (moving adapter plate, P-03 item 28): `UNKNOWN`, `RELEASED`, `PRESSED`, from its spare
+  NO at CTL-017. It is `UNKNOWN` whenever the CTL-017 link is not `OK`, even when `/base/status` is fresh. The
+  signal name `ESTOP_CHEST` stays until the I8 rename.
+- Reserved generic inputs for later upper-body ToF and ultrasonic sensors; no hardware now.
 
 ### 2.5 Motion authority
 
@@ -137,22 +157,31 @@ interface remain release gates.
 - Firmware interlocks on the lift (item 14) stay in firmware. This topic reports the arbiter's
   view; it is not the interlock.
 
-### 2.6 Hardwired chain diagnostics
+### 2.6 Hardwired chain diagnostics (block inside `/base/status`)
 
-Diagnostics only, as issue 30 and E-01 require:
+Diagnostics only, as issue 30 and E-01 require. The block sits inside `/base/status` (Q3), so the chain and
+the base status always share one freshness.
 
-- `safety_ok`: `UNKNOWN`, `OPEN`, `CLOSED`, from Y32.
-- `estop_base`: `UNKNOWN`, `RELEASED`, `PRESSED`; `estop_chest` taken from the aux block.
+- `safety_ok`: `UNKNOWN`, `OPEN`, `CLOSED`, from PNOZ Y32 through the ISO1212 input.
+- `estop_base`: `UNKNOWN`, `RELEASED`, `PRESSED`, from the base E-stop spare NO. The second E-stop comes from
+  the aux block.
 - `reset_required`: RESET lamp state as the controller drives it.
 - `reset_pressed`.
-- `charge_inhibit_active`: the charge request is on, so the PNOZ supply is open.
-- `diagnosis`: `NONE`, `ESTOP_PRESSED`, `RESET_REQUIRED`, `CHARGE_INHIBIT`, `PNOZ_DID_NOT_ENABLE`
-  (the E-01 reset-timeout case), `CAUSE_UNKNOWN`.
+- `charge_inhibit_active`: follows the controller's own KCHG output; the PNOZ supply is open.
+- `charger_fault`: `UNKNOWN`, `OK`, `FAULT`, from the TZBOT charger fault line. Build 1 has no receiver
+  (D-05), so it reads `UNKNOWN`.
+- `diagnosis`: `NONE`, `ESTOP_PRESSED`, `RESET_REQUIRED`, `CHARGE_INHIBIT`, `PNOZ_DID_NOT_ENABLE` (the E-01
+  reset-timeout case), `CAUSE_UNKNOWN`.
+- No K1/K2 feedback field: E-01 removed it; a welded contactor blocks the PNOZ reset instead.
 
-`SAFETY_STOPPED` is derived only from `safety_ok == OPEN` in a fresh message. A pressed-button
-observation without `OPEN` is reported as a diagnostic mismatch, not as `SAFETY_STOPPED`.
-Whether `safety_ok == OPEN` caused by charging is `SAFETY_STOPPED` is not settled; it is
-pending Q8 (section 4.1).
+`SAFETY_STOPPED` is derived only from `safety_ok == OPEN` in a fresh message. A pressed-button observation
+without `OPEN` is reported as a diagnostic mismatch, not as `SAFETY_STOPPED`. Charging follows Q8 (section 4.1).
+
+**Charge status (decided 9 Nov).** Charging is reported as a separate machine-readable charge status, not as
+a robot state: `UNKNOWN`, `NONE`, `REQUESTED`, `CHARGING`, `FAULT`. `REQUESTED` means the charge inhibit is
+active but no source confirms current flow; `CHARGING` needs that confirmation. Where it lives (a field of
+`BaseStatus` or of the roll-up) is for issue 30. How manual SB50 charging is detected on Build 1 is the
+safety owner's ruling (P-03 item 30 A9); until then Build 1 reports `REQUESTED` at most.
 
 ### 2.7 Reason code groups
 
@@ -168,27 +197,31 @@ Proposed new groups, continuing the `NavigationStatus` scheme (no overlap with 1
 | 15001 | software stop |
 | 16001 | configuration identity |
 | 17001 | command acceptance and results (section 6) |
+| 18001 | base controller (owned by platform-fw, issue 10) |
 
-Base-controller fault codes stay owned by platform-fw in the central registry (issue 10). Where
-the registry lives is Q2.
+Base-controller fault codes are group 18001, owned by platform-fw (issue 10), in one registry file in this
+repository next to the contracts (Q2). The file format and whether constants are generated from it are open
+(I8 rev 3, decision 5). CTL-017 fault IDs stay subsystem-local codes (D19).
 
 ## 3. Freshness, UNKNOWN and fault rules
 
 Every source follows the `NavigationStatus` publish behaviour: reliable, transient-local,
 depth 1, publish on change plus a heartbeat. Freshness is measured by the consumer on a
 monotonic (steady) clock from the last receipt, never on simulated time, so a paused or zero
-`/clock` cannot make a source look fresh (the PR 90 sim-clock finding). Header stamps are used
-for ordering and age reporting; the base controller's monotonic microsecond time base is the
-stamp source for `/base/*`.
+`/clock` cannot make a source look fresh (the PR 90 sim-clock finding). For `/base/*` the header
+stamp carries the base controller's monotonic microsecond time base and is diagnostic only;
+ordering and restart detection use the boot identity and the `uint32` sequence number. A message
+delivered from the transient-local history on subscription does not show that the publisher is
+alive: the source is fresh only after a further message within its stale limit.
 
-Default values below are proposals, recorded under a `thresholds_id` like `NavigationStatus`,
-and are not decisions until the owner accepts them.
+The `/base/*` values are frozen in I8 rev 3. The other values are proposals, recorded under a
+`thresholds_id` like `NavigationStatus`, and are not decisions until the owner accepts them.
 
 | Source | Heartbeat | Stale after | When stale or never received |
 |---|---|---|---|
-| `/base/status`, `/base/safety_chain` | 10 Hz | 0.3 s | base `UNKNOWN`, reason `BASE_LINK_LOST`; chain `safety_ok = UNKNOWN`, never `SAFETY_STOPPED` |
-| `/base/aux_status` | 5 Hz | 0.6 s | lift, head light, Getac and chest E-stop `UNKNOWN` |
-| lift entry with fresh aux block but lift node link lost | | | lift `UNKNOWN`, reason `LIFT_LINK_LOST`; chest E-stop `UNKNOWN` |
+| `/base/status` (includes the chain block) | 10 Hz | 0.5 s | base `UNKNOWN`, reason `BASE_LINK_LOST`; chain `safety_ok = UNKNOWN`, never `SAFETY_STOPPED`. The 0.3 s of PR 90 is the velocity-command timeout, a separate value |
+| `/base/aux_status` | 5 Hz | 0.6 s | lift, head light, Getac and second E-stop `UNKNOWN`; no `lift_joint` on `/joint_states` |
+| lift entry with fresh aux block but CTL-017 `link` not `OK` | | | lift `UNKNOWN`, reason `LIFT_LINK_LOST`; second E-stop `UNKNOWN`; no `lift_joint` on `/joint_states` |
 | `/manipulation/arm_status` | 2 Hz | 1.5 s | each arm `UNKNOWN`, reason `ARM_STATUS_STALE` |
 | arm joint states inside a fresh arm status | 100 Hz | 0.2 s | that arm `mode = UNKNOWN`, reason `ARM_JOINT_STATE_STALE` |
 | `/manipulation/motion_authority` | 2 Hz | 1.5 s | `holder = UNKNOWN`; every motion command is rejected |
@@ -207,11 +240,12 @@ Rules:
    source ID. The latch clears only when S itself publishes a fresh message with no fault.
    Another source, staleness, a UI action or a timeout does not clear it. A stale source with a
    latched fault shows both: `FAULTED` and the stale reason.
-5. A producer restart (new reset reason or new process) is the same source for the latch; the
-   first fresh message after the restart decides. Whether a restart alone may clear a latch is
-   Q4.
+5. A producer restart (new boot identity or new process) is the same source for the latch. On the base side
+   a restart alone never clears a latched fault: it clears only with a fault-free message after a deliberate
+   reset, which the reset reason tells apart from a watchdog or brown-out reset (Q4, base side answered).
+   For the arms and the roll-up, Q4 is still open.
 6. Field validity as in CONTRACT.md: `position_m` is meaningful only when `position_valid`;
-   `target_stop` only while `moving` or `seeking_nearest_stop`; `joint_state_age` is 0 when
+   `target_stop` only while `state` is `MOVING` or `HOMING`; every lift field only while `link == OK`; `joint_state_age` is 0 when
    `mode` is `ABSENT`; any `reason` is NONE exactly when its state is in its nothing-wrong value.
 
 ## 4. Robot ready, kept separate from navigation readiness
@@ -235,7 +269,8 @@ run tasks now. It is an explicit AND, and the roll-up lists every unmet term in
 6. Each required arm: `mode == HOLDING`, `controller_active`, `fault == HEALTH_OK`,
    `in_safe_pose` is `STOWED` or `CARRY`.
 7. Each required gripper: controller active, no fault.
-8. Lift: `position_valid`, not moving, no fault, `at_stop` is a calibrated stop.
+8. Lift: CTL-017 `link == OK`, `position_valid`, not moving, no fault, no `recovery_required`, and `at_stop`
+   is a calibrated stop (L1000, L1175 or L1350); a valid position between stops is not enough (Q13).
 9. Motion authority `holder == NONE`.
 10. Configuration identity present and its hash equals the expected hash for this deployment.
 
@@ -252,11 +287,11 @@ The roll-up publishes one `robot_state`. The first matching row wins:
 
 | Robot state | Condition |
 |---|---|
-| pending Q8 (platform and safety owners) | fresh `safety_ok == OPEN` while fresh `charge_inhibit_active` is true (the chain is open because of charging). Not a settled rule. The alternatives are `SAFETY_STOPPED` with diagnosis `CHARGE_INHIBIT`, or a separate presentation; Q8 decides. Whichever is chosen, term 2 keeps `robot_readiness` NOT_READY and no motion goal is admissible, because the actuators are unpowered |
+| `WAITING` with reason `CHARGE_INHIBIT` (Q8, decided 9 Nov) | fresh `safety_ok == OPEN` while fresh `charge_inhibit_active` is true and no E-stop is observed pressed. Charging is shown through the charge status (section 2.6), not as a robot state. Term 2 keeps `robot_readiness` NOT_READY and no motion goal is admissible, because the actuators are unpowered. With an E-stop pressed, the next row applies |
 | `SAFETY_STOPPED` | fresh `safety_ok == OPEN` in every other case |
 | `FAULTED` | any latched fault in a required source, or a Stop not confirmed (section 5) |
-| `NEEDS_ASSISTANCE` | a condition only a person clears: recovery limit reached, a task aborted with a reason marked operator-required, lift position not valid after the seek timed out, an arm healthy but outside a safe pose with no goal active (it needs a recovery goal, section 4.3) |
-| `RECOVERING` | a navigation recovery is running, or the lift is seeking its nearest stop |
+| `NEEDS_ASSISTANCE` | a condition only a person clears: recovery limit reached, a task aborted with a reason marked operator-required, lift position not valid or between stops after HOMING timed out (it needs a lift recovery goal, section 4.3), an arm healthy but outside a safe pose with no goal active (it needs a recovery goal, section 4.3) |
+| `RECOVERING` | a navigation recovery is running, or CTL-017 reports HOMING |
 | `BLOCKED` | a goal is active but cannot progress: travel inhibited, authority held by another subsystem, software stop engaged during a goal, path blocked |
 | `EXECUTING` | an accepted goal is active (navigation, docking, arm, gripper, lift) |
 | `WAITING` | no goal, not ready, and every unmet term is expected to clear without a person (startup, base settling, a source still starting) |
@@ -276,7 +311,9 @@ its presentation state before showing the robot state:
    reports no data yet.
 4. `STOPPED (SOFTWARE)`: lock engaged and `robot_state` is not `SAFETY_STOPPED` or `FAULTED`;
    shown with the stop scope label (section 5).
-5. Otherwise the robot state as published.
+5. Otherwise the robot state as published. A "Charging" label is shown next to it only when the
+   charge status is `CHARGING`, that is when the source confirms charging; `REQUESTED` is shown as
+   "Charge requested" (Q8).
 
 `SAFETY_STOPPED` is never shown from a UI-side guess, only from the published robot state.
 
@@ -308,9 +345,20 @@ even while `robot_readiness` is NOT_READY. It is admissible when all of these ho
    arbiter refuses while the base is commanded or moving, and under P-03 items 14 and 15 while
    the lift moves. It also refuses while the software stop is engaged, while `safety_ok` is not
    `CLOSED` in a fresh message, and while any source it needs is stale.
+4. The configuration identity matches (term 10, Q18). Otherwise the goal is refused with
+   `CONFIGURATION_MISMATCH` before any pose target is applied.
+
+**Lift recovery goals (Q16).** `LiftToStop` to a calibrated stop is admissible while `robot_readiness` is
+NOT_READY when the lift is healthy (fresh aux block, CTL-017 `link == OK`, no latched lift fault, stop sensors
+valid), the configuration identity matches (Q18), and the motion arbiter grants `LIFT` authority. The CTL-017
+interlock (base stopped, arms in a safe pose, P-03 items 14 and 15) applies unchanged. Success means a
+calibrated stop is reached, which is what term 8 needs.
+
+**Who sends a recovery goal (Q17).** For 2.0, only an operator action. There is no automatic recovery
+behaviour; revisit after the motion arbiter exists and there is bench evidence.
 
 Faults, staleness and pose in other subsystems (lift, grippers, the other arm when `arm` names
-one side, configuration identity) do not block a recovery goal by themselves. They only block it
+one side) do not block a recovery goal by themselves. They only block it
 when the arbiter's own rules use them.
 
 A recovery goal always goes through the motion arbiter and the hardware interlocks, never
@@ -334,10 +382,10 @@ around them:
 3. `robot_readiness` is NOT_READY with `ARMS_NOT_IN_SAFE_POSE` (term 6). `robot_state` is
    `NEEDS_ASSISTANCE`. The base is stopped, the lift is still, and the software stop is released.
 4. The operator sends `ArmToNamedPose` with `arm: LEFT` and `pose_name: stowed`. The pose is
-   declared, the left arm is healthy, and the arbiter grants `ARMS`. The goal is accepted and
+   declared, the left arm is healthy, the configuration identity matches, and the arbiter grants `ARMS`. The goal is accepted and
    `robot_state` is `EXECUTING`.
 5. While it runs, a base command is refused with `ARM_MOTION_ACTIVE`. A `LiftToStop` goal sent
-   at the same time is rejected with `NOT_READY`.
+   at the same time is rejected with `AUTHORITY_HELD`.
 6. The arm reaches the pose. The result is `SUCCEEDED` only when the joint error is within
    tolerance on fresh joint states (section 6). The arm reports `in_safe_pose == STOWED`, and the
    arbiter returns to `holder == NONE`.
@@ -371,22 +419,33 @@ and is never described as an E-stop or as making the robot safe.
 | Base | unchanged PR 90 gate: zero on `cmd_vel_gated` | gate node reports locked |
 | Arms | cancel active trajectory goals; the trajectory controller holds the current position; new arm goals rejected with `SOFTWARE_STOP_ENGAGED` | arm `mode == HOLDING`, joint velocities below a threshold |
 | Grippers | cancel active goals and hold the current position; never open on Stop, so a held object is not dropped | gripper not moving |
-| Lift | halt command to the lift node over I8; the column holds by itself; new lift goals rejected | lift `moving == false` |
+| Lift | halt over I8: the base controller relays it to CTL-017 on CAN3, which disables the H-bridge; the DOLD column holds mechanically; new lift goals rejected | lift `moving == false` with CTL-017 `link == OK` |
 | Head light | unchanged; not a motion source | none |
 
 - `/robot/status` carries `stop_scope` (`BASE_ONLY` until the target is accepted, then
   `WHOLE_ROBOT`) and one confirmation per subsystem in scope.
 - If a subsystem in scope does not confirm within a timeout (proposed 1 s), the robot state is
   `FAULTED` with `STOP_NOT_CONFIRMED_<SUBSYSTEM>`, latched until that subsystem confirms.
-- **Release** is a deliberate operator action through the release service. It is refused, with
-  a reason in the `std_srvs/Trigger` message, while any in-scope subsystem is stale or
-  `UNKNOWN` or has a stop-confirmation fault. Release never resumes anything: cancelled goals
-  stay cancelled and motion needs a new command, as E-01 states for the hardwired reset.
-- After a hardwired stop clears, the software lock is engaged (proposed), so the operator
-  releases it explicitly. The software lock already starts engaged (PR 90).
+- **Resume** (the release service; P-03 item 30 A1, D-13 and D-14) is a deliberate operator action. It needs
+  positive idle evidence from every motion producer the launch profile enables, reported through one
+  platform node that owns the navigation and docking goal handles; producers the profile disables are
+  excluded by name. A producer that is missing, stale or restarted is `UNKNOWN` and blocks Resume, as do a
+  chain that is not `CLOSED` and a stop-confirmation fault. After a clean boot Resume is available within
+  2 s. A cancel reply never counts as a terminal state. Resume clears the inhibit only: cancelled goals stay
+  cancelled and motion needs a new command. "Send last goal again" sends a new goal only on explicit
+  operator action, and a reboot clears it.
+- Base idle evidence: fresh `/base/status`, applied command zero, and the base stationary (below 0.01 m/s
+  and 0.02 rad/s for 0.5 s, CAN3 decision D14). Whether `BaseStatus` carries this as one field is for
+  issue 30 (rev 3, decision 2).
+- After a hardwired stop clears, the software lock stays engaged, so a RESET press never releases the
+  software stop by itself (Q10). The software lock already starts engaged (PR 90).
+- Loss of the controlling operator session is a separate function (D-15, openamr-platform-sw issue 128):
+  during an autonomous goal it cancels the goal and stops the robot after 2 s; loss of an observer session
+  does nothing; a reconnect never restarts motion.
+- Lock state telemetry is `StopState` (PR 35: `LOCKED`, `RELEASE_REFUSED` with a reason, `RUNNING`).
 - **UI:** "Stop (software)" button always available while connected, including during
   `SAFETY_STOPPED`; presentation `STOPPED (SOFTWARE)` with the scope label "base only" or
-  "base, arms and lift"; the per-subsystem confirmation list; a "Release" control that shows the
+  "base, arms and lift"; the per-subsystem confirmation list; a "Resume" control that shows the
   refusal reason. The UI never labels this button E-stop.
 
 ## 6. Future commands: actions only
@@ -436,7 +495,7 @@ One robot-side record, published latched on `/robot/configuration`:
 |---|---|
 | `column` | `upperbody_configuration.yaml` (`dold_v4_350`, `tl3_400`) |
 | `base_plate` | `bp000`, `bp050` |
-| `head_pitch` | `hp15` to `hp35`; baseline `hp30` (P-03 rev20.1, Q12 resolved) |
+| `head_pitch` | `hp15` to `hp35`; baseline `hp30` (P-03 rev20.6, Q12 resolved) |
 | `base_tilt` | `bt05`, `bt10`, `bt15` |
 | `datums_revision` | `datums.yaml` `revision` |
 | `calibration_ids` | head camera per lift stop (L1000, L1175, L1350), base camera; the lift stops are calibration IDs, not configuration axes |
@@ -455,23 +514,23 @@ One robot-side record, published latched on `/robot/configuration`:
 | ID | Question | Owner |
 |---|---|---|
 | Q1 | Contract homes: `/robot/status` in a new `openamr_robot_msgs` package or elsewhere; arm and authority status in the I1 package or a manipulation package | contract owner decides; tech lead reviewer |
-| Q2 | Where the central fault registry lives and how the 10001 to 17001 groups relate to platform-fw base codes | I8 owner; tech lead reviewer |
-| Q3 | Chain diagnostics as their own topic or a block inside `/base/status`; final topic names for I8 | I8 owner |
-| Q4 | May a producer restart alone clear a latched fault, or must a fault-free message follow a deliberate reset | I8 owner (base), arm status owner (arms), contract owner (roll-up) |
-| Q5 | Which repository publishes `lift_joint` into `/joint_states` from the I8 lift entry | I8 owner, arm status owner |
-| Q6 | Heartbeat and stale values in section 3 | I8 owner (base, lift), arm status owner (arms), contract owner (roll-up) |
+| Q2 | Where the central fault registry lives and how the 10001 to 17001 groups relate to platform-fw base codes | **Answered 4 Nov** (I8 owner): one registry file here; base codes group 18001, owned by platform-fw |
+| Q3 | Chain diagnostics as their own topic or a block inside `/base/status`; final topic names for I8 | **Answered 4 Nov** (I8 owner): block inside /base/status; topics /base/status and /base/aux_status frozen 6 Nov |
+| Q4 | May a producer restart alone clear a latched fault, or must a fault-free message follow a deliberate reset | **Base side answered 4 Nov** (restart never clears; deliberate reset only); arm status owner and contract owner still open |
+| Q5 | Which repository publishes `lift_joint` into `/joint_states` from the I8 lift entry | **Answered 4 Nov** (I8 owner), confirmed 9 Nov by the platform lead: host relay in openamr-platform-sw from the aux block, only while fresh, link OK and position_valid; MoveIt freshness guard in openamr-upperbody-sw |
+| Q6 | Heartbeat and stale values in section 3 | **/base/* answered and frozen** (10 Hz / 0.5 s, 5 Hz / 0.6 s); arm status owner and contract owner values still open |
 | Q7 | Joint values of the stowed and carry safe poses, and the tolerance for `in_safe_pose` | arm status owner, with the manipulation co-owner |
-| Q8 | Whether `safety_ok == OPEN` because of charging is `SAFETY_STOPPED` with `CHARGE_INHIBIT` or a separate presentation. Section 4.1 marks this branch as pending Q8, not as a settled rule | contract owner (platform lead) and safety owner |
+| Q8 | Whether `safety_ok == OPEN` because of charging is `SAFETY_STOPPED` with `CHARGE_INHIBIT` or a separate presentation. | **Decided 9 Nov** (contract owner, after the safety owner's answer of 4 Nov): robot state WAITING with reason CHARGE_INHIBIT, plus a separate charge status; E-stop pressed gives SAFETY_STOPPED; the UI shows Charging only when the source confirms it; the safety owner rules how manual SB50 charging is detected (A9) |
 | Q9 | Rejection pattern for actions: reject at the goal callback (no reason reaches the client) or accept and abort with a reason | arm status owner, contract owner; tech lead reviewer |
-| Q10 | Whole-robot Stop design: arm hold method, lift halt path over I8, gripper hold, confirmation timeout, release refusal conditions, lock state after a hardwired reset | contract owner (platform lead) and safety owner |
+| Q10 | Whole-robot Stop design: arm hold method, lift halt path over I8, gripper hold, confirmation timeout, release refusal conditions, lock state after a hardwired reset | **Direction agreed 4 Nov** (safety owner); confirmation timeout and lift-halt design note due 12 Nov (I8 owner) |
 | Q11 | Owner of the runtime configuration identity producer (PR 14 records none) | Embodied AI lead, with the arm status owner |
 | Q12 | **Resolved 30 Oct 2026.** Baseline head pitch is hp30 (P-03 rev20.1). The hp25 default in `upperbody_configuration.yaml` on PR 14 is stale; the PR 14 author fixes it there. Section 7 assumes hp30 | PR 14 author (fix) |
-| Q13 | Robot-ready term 8: must the lift be at a calibrated stop, or is any valid position enough | I8 owner, arm status owner |
-| Q14 | **Resolved 30 Oct 2026.** The platform lead is the contract owner of this readiness contract; the safety owner is the I8 owner, who leads hardware, firmware and the safety layer | none |
+| Q13 | Robot-ready term 8: must the lift be at a calibrated stop, or is any valid position enough | **Answered 4 Nov** (I8 owner): calibrated stop required |
+| Q14 | **Resolved 30 Oct 2026.** The platform lead is the contract owner of this readiness contract; the safety owner is the I8 owner, who leads hardware, firmware and the safety layer | **Updated 9 Nov.** The platform lead owns platform-wide adoption of this contract; the navigation owner owns navigation semantics (Q16 to Q18); the I8 owner signs off firmware, charging and hardware diagnostics |
 | Q15 | Whether `MANIPULATION_READY` from issue 7 equals terms 6 to 8 of section 4 | arm status owner, manipulation co-owner |
-| Q16 | Section 4.3 defines recovery goals for arms only. Term 8 needs the lift at a calibrated stop and `LiftToStop` is a task goal, so a healthy lift between stops after the seek has timed out has the same kind of deadlock. Should `LiftToStop` to the nearest stop be a recovery goal, and under which arbiter conditions (P-03 item 14 needs the arms in a safe pose and the base stopped) | contract owner, I8 owner, arm status owner |
-| Q17 | Who may send an arm recovery goal: only an operator from the UI, or also an automatic recovery behaviour on the robot. Section 4.1 assumes an operator (`NEEDS_ASSISTANCE`) | contract owner, arm status owner |
-| Q18 | Must a recovery goal also need a matching configuration identity (term 10), so the stowed and carry joint values come from the expected description. Section 4.3 does not require it | contract owner, Embodied AI lead, arm status owner |
+| Q16 | Section 4.3 defines recovery goals for arms only. Term 8 needs the lift at a calibrated stop and `LiftToStop` is a task goal, so a healthy lift between stops after the seek has timed out has the same kind of deadlock. Should `LiftToStop` to the nearest stop be a recovery goal, and under which arbiter conditions (P-03 item 14 needs the arms in a safe pose and the base stopped) | **Decided 2 Nov** (navigation owner), agreed 4 Nov by the safety owner, adopted 9 Nov by the platform lead; folded into section 4.3 |
+| Q17 | Who may send an arm recovery goal: only an operator from the UI, or also an automatic recovery behaviour on the robot. Section 4.1 assumes an operator (`NEEDS_ASSISTANCE`) | **Decided 2 Nov** (navigation owner), agreed 4 Nov by the safety owner, adopted 9 Nov by the platform lead; folded into section 4.3 |
+| Q18 | Must a recovery goal also need a matching configuration identity (term 10), so the stowed and carry joint values come from the expected description. Section 4.3 does not require it | **Decided 2 Nov** (navigation owner), agreed 4 Nov by the safety owner, adopted 9 Nov by the platform lead; folded into section 4.3 |
 
 ## Not verified
 
