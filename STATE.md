@@ -10,6 +10,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 - Readiness: R1 (evidence: ROS 2 Jazzy workflow running `tools/verify.sh` on main, run 37936438992)
 - Owner role: software-lead
 - Verification: `bash tools/verify.sh`; last PASS on main at 87ab8a9 (2026-10-09), run 37936438992
+- I8 verification: `bash tools/verify.sh` passed on the working tree (2026-11-11); evidence at `.verification/run.LmU15W`.
 
 ## Current work
 
@@ -17,6 +18,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 |---|---|---|---|
 | C10 dataset quality gate | PR #25 | draft / synthetic evidence only | Work-package owner reviews placement and supplies real-episode evidence |
 | Shared rules v2 (rollout step a, pilot) | PR #26 | in review | merge, then step (b) pin the harness |
+| I8 base-controller interfaces | Issue #30 / `feat/i8-base-controller-msgs` | implementation and local verification passed (2026-11-11); contract remains proposed | owner review and resolution of open contract decisions |
 
 ## Decisions this repository implements
 
@@ -33,5 +35,5 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 
 ## Not verified
 
-- This step-(a) PR changes repository guidance only; it does not run ROS, DDS, hardware or production acceptance tests.
+- I8 verification is local ROS 2 Jazzy software verification only; firmware integration, physical robot, safety-chain and hardware validation are not established (2026-11-11).
 - No physical robot, safety-chain, released binary or cross-version deployment evidence is claimed.

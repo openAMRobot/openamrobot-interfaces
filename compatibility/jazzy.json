@@ -1,6 +1,604 @@
 {
   "format_version": 1,
   "packages": {
+    "openamr_base_msgs": {
+      "interfaces": {
+        "msg/BaseAuxStatus": {
+          "constants": {
+            "msg/CONTRACT_VERSION": {
+              "type": "uint16",
+              "value": 1
+            },
+            "msg/HEAD_LIGHT_OFF": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/HEAD_LIGHT_ON": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/HEAD_LIGHT_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/LIFT_HOMING_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/LIFT_LINK_LOST": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/LIFT_LINK_OK": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/LIFT_LINK_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/LIFT_MOTION_DOWN": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/LIFT_MOTION_STOPPED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/LIFT_MOTION_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/LIFT_MOTION_UP": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/OBS_NO": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/OBS_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/OBS_YES": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SECOND_ESTOP_PRESSED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SECOND_ESTOP_RELEASED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SECOND_ESTOP_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/STOP_L1000": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STOP_L1175": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STOP_L1350": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STOP_NONE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STOP_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_fe993c816f75991ac226947a076c65c167fa9441fd6fb620ce31975defe93ecd"
+        },
+        "msg/BaseFault": {
+          "constants": {
+            "msg/BASE_COMMAND_TIMEOUT": {
+              "type": "uint16",
+              "value": 18001
+            },
+            "msg/BASE_HOST_LINK_LOST": {
+              "type": "uint16",
+              "value": 18002
+            },
+            "msg/BMS_COMM_LOST": {
+              "type": "uint16",
+              "value": 18008
+            },
+            "msg/BMS_FAULT": {
+              "type": "uint16",
+              "value": 18009
+            },
+            "msg/CHARGER_FAULT": {
+              "type": "uint16",
+              "value": 18021
+            },
+            "msg/CHARGE_INTERLOCK_FAULT": {
+              "type": "uint16",
+              "value": 18022
+            },
+            "msg/CONTRACT_MISMATCH": {
+              "type": "uint16",
+              "value": 18013
+            },
+            "msg/DRIVER_COMM_LOST": {
+              "type": "uint16",
+              "value": 18003
+            },
+            "msg/DRIVER_FAULT": {
+              "type": "uint16",
+              "value": 18004
+            },
+            "msg/DRIVER_FEEDBACK_INVALID": {
+              "type": "uint16",
+              "value": 18005
+            },
+            "msg/DRIVE_CONFIG_MISMATCH": {
+              "type": "uint16",
+              "value": 18023
+            },
+            "msg/ENCODER_ODOMETRY_FAULT": {
+              "type": "uint16",
+              "value": 18006
+            },
+            "msg/ESTOP_DIAGNOSTIC_ACTIVE": {
+              "type": "uint16",
+              "value": 18018
+            },
+            "msg/ESTOP_DIAGNOSTIC_UNKNOWN": {
+              "type": "uint16",
+              "value": 18028
+            },
+            "msg/FAULT_LIST_OVERFLOW": {
+              "type": "uint16",
+              "value": 18015
+            },
+            "msg/IMU_FAULT": {
+              "type": "uint16",
+              "value": 18007
+            },
+            "msg/LIFECYCLE_ACKNOWLEDGED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/LIFECYCLE_ACTIVE": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/LIFECYCLE_CLEARED": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/LIFECYCLE_LATCHED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/LIFECYCLE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/NONE": {
+              "type": "uint16",
+              "value": 0
+            },
+            "msg/OBS_NO": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/OBS_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/OBS_YES": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/PNOZ_DIAGNOSTIC_NOT_ENABLED": {
+              "type": "uint16",
+              "value": 18012
+            },
+            "msg/RESET_INPUT_HIGH": {
+              "type": "uint16",
+              "value": 18019
+            },
+            "msg/SAFETY_INPUT_CONTRADICTORY": {
+              "type": "uint16",
+              "value": 18011
+            },
+            "msg/SAFETY_INPUT_UNKNOWN": {
+              "type": "uint16",
+              "value": 18010
+            },
+            "msg/SEVERITY_FAULT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SEVERITY_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/SEVERITY_WARNING": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SOURCE_BMS": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/SOURCE_COMMAND": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SOURCE_CONFIG": {
+              "type": "uint8",
+              "value": 10
+            },
+            "msg/SOURCE_ENCODER": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/SOURCE_HOST_LINK": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SOURCE_IMU": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/SOURCE_LIFT": {
+              "type": "uint8",
+              "value": 9
+            },
+            "msg/SOURCE_MOTOR_DRIVER": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/SOURCE_RANGE_SENSOR": {
+              "type": "uint8",
+              "value": 8
+            },
+            "msg/SOURCE_RESET": {
+              "type": "uint8",
+              "value": 11
+            },
+            "msg/SOURCE_SAFETY_INPUT": {
+              "type": "uint8",
+              "value": 7
+            },
+            "msg/SOURCE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/TRANSPORT_FAILURE": {
+              "type": "uint16",
+              "value": 18014
+            }
+          },
+          "type_hash": "RIHS01_f799c6e06fecb7e3f0b3281d1cc26b809a01ac78aa4b30fa05c87641b1c7b665"
+        },
+        "msg/BaseMotionConstraint": {
+          "constants": {
+            "msg/TYPE_LIFT_HOLD": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/TYPE_SPEED_LIMIT": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/TYPE_TRAVEL_INHIBIT_FORWARD": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/TYPE_TRAVEL_INHIBIT_REVERSE": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/TYPE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_9dfdbc2bba5801be49c01b3ad4b8a486461427b0651f8e073cddc18074793455"
+        },
+        "msg/BaseStatus": {
+          "constants": {
+            "msg/APPLIED_COMMAND_INHIBITED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/APPLIED_COMMAND_OK": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/APPLIED_COMMAND_TIMEOUT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/APPLIED_COMMAND_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/COMMAND_ACCEPTANCE_ACCEPTING": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/COMMAND_ACCEPTANCE_REJECTING": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/COMMAND_ACCEPTANCE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/CONTRACT_VERSION": {
+              "type": "uint16",
+              "value": 1
+            },
+            "msg/HOST_LINK_LOST": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/HOST_LINK_OK": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/HOST_LINK_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/OBS_NO": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/OBS_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/OBS_YES": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/OPERATING_STATE_CHARGER_FAULT": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/OPERATING_STATE_CHARGING": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/OPERATING_STATE_INHIBITED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/OPERATING_STATE_LOCKED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/OPERATING_STATE_RUN": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/OPERATING_STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/POWERED_DEBUG_DISABLED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/POWERED_DEBUG_ENABLED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/POWERED_DEBUG_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/READINESS_NOT_READY": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/READINESS_READY": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/READINESS_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/REASON_BMS_FAULT": {
+              "type": "uint32",
+              "value": 8
+            },
+            "msg/REASON_CHARGER_FAULT": {
+              "type": "uint32",
+              "value": 32
+            },
+            "msg/REASON_CHARGE_INTERLOCK": {
+              "type": "uint32",
+              "value": 64
+            },
+            "msg/REASON_COMMS_LOST": {
+              "type": "uint32",
+              "value": 4
+            },
+            "msg/REASON_DRIVE_COMMS": {
+              "type": "uint32",
+              "value": 256
+            },
+            "msg/REASON_DRIVE_CONFIG": {
+              "type": "uint32",
+              "value": 512
+            },
+            "msg/REASON_DRIVE_FAULT": {
+              "type": "uint32",
+              "value": 128
+            },
+            "msg/REASON_ESTOP_DIAG_ACTIVE": {
+              "type": "uint32",
+              "value": 2
+            },
+            "msg/REASON_ESTOP_DIAG_UNKNOWN": {
+              "type": "uint32",
+              "value": 2048
+            },
+            "msg/REASON_INPUT_INVALID": {
+              "type": "uint32",
+              "value": 16
+            },
+            "msg/REASON_PNOZ_DIAGNOSTIC_NOT_ENABLED": {
+              "type": "uint32",
+              "value": 1
+            },
+            "msg/REASON_RESET_INPUT_HIGH": {
+              "type": "uint32",
+              "value": 1024
+            },
+            "msg/RECOVERY_NOT_REQUIRED": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/RECOVERY_REQUIRED": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/RECOVERY_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/RESET_CAUSE_BROWNOUT": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/RESET_CAUSE_PIN": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/RESET_CAUSE_POWER_ON": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/RESET_CAUSE_SOFTWARE": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/RESET_CAUSE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/RESET_CAUSE_WATCHDOG": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_DEGRADED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_FAULTED": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_INITIALIZING": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_READY": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_05105510cbea27090feb2696cbfc859b0218d69d49865aa1ccb4093e7c9d091e"
+        },
+        "msg/BaseSubsystemStatus": {
+          "constants": {
+            "msg/STATE_ABSENT": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/STATE_DEGRADED": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/STATE_OK": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/STATE_STALE": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/STATE_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            },
+            "msg/SUBSYSTEM_BMS": {
+              "type": "uint8",
+              "value": 4
+            },
+            "msg/SUBSYSTEM_CLIFF_FRONT": {
+              "type": "uint8",
+              "value": 9
+            },
+            "msg/SUBSYSTEM_CLIFF_REAR": {
+              "type": "uint8",
+              "value": 10
+            },
+            "msg/SUBSYSTEM_ENCODERS": {
+              "type": "uint8",
+              "value": 2
+            },
+            "msg/SUBSYSTEM_IMU": {
+              "type": "uint8",
+              "value": 3
+            },
+            "msg/SUBSYSTEM_LIFT_NODE_LINK": {
+              "type": "uint8",
+              "value": 11
+            },
+            "msg/SUBSYSTEM_MOTOR_DRIVER": {
+              "type": "uint8",
+              "value": 1
+            },
+            "msg/SUBSYSTEM_RANGE_FRONT_LEFT": {
+              "type": "uint8",
+              "value": 5
+            },
+            "msg/SUBSYSTEM_RANGE_FRONT_RIGHT": {
+              "type": "uint8",
+              "value": 6
+            },
+            "msg/SUBSYSTEM_RANGE_REAR_LEFT": {
+              "type": "uint8",
+              "value": 7
+            },
+            "msg/SUBSYSTEM_RANGE_REAR_RIGHT": {
+              "type": "uint8",
+              "value": 8
+            },
+            "msg/SUBSYSTEM_UNKNOWN": {
+              "type": "uint8",
+              "value": 0
+            }
+          },
+          "type_hash": "RIHS01_c100efb61a24e2ebe9894e396bc5bb9bb0a43c4ca7e6b594cd1c1cc1caceae0d"
+        }
+      },
+      "package_version": "0.0.0"
+    },
     "openamr_nav_msgs": {
       "interfaces": {
         "msg/ActiveConstraint": {
