@@ -80,7 +80,7 @@ enum 0 is UNKNOWN, reason 0 is NONE, append-only reason groups, field validity s
 |---|---|---|---|
 | `/base/status` (`BaseStatus`, frozen) | Base controller status: controller state, readiness, recovery required, reset reason, boot identity and sequence, applied command, fault entries (group 18001), and the hardwired chain diagnostics block (section 2.6) | base controller (micro-ROS) | I8 owner |
 | `/base/aux_status` (`BaseAuxStatus`, frozen) | Aux-device block: CTL-017 link, lift entry, head light, Getac power-good, second E-stop observation, reserved generic inputs | base controller, relaying CTL-017 over CAN3 | I8 owner |
-| `/joint_states` (existing) | `lift_joint` from the aux block, published only while `/base/aux_status` is fresh (0.6 s from local receipt), the CTL-017 link is `OK` and `position_valid` is true; otherwise nothing is published, never a held or default value. Firmware does not publish `/joint_states`. The MoveIt freshness guard and the real-profile integration that consume it live in openamr-upperbody-sw | host relay in openamr-platform-sw, next to the base status monitor (Q5) | I8 owner (data), arm status owner (consumer) |
+| `/joint_states` (existing) | `lift_joint` from the aux block, published only while `/base/aux_status` is fresh (0.6 s from local receipt), the CTL-017 link is `OK` and `position_valid` is true; otherwise nothing is published, never a held or default value. Firmware does not publish `/joint_states`. The MoveIt freshness guard and the real-profile integration that consume it live in openamr-upperbody-sw | host relay in openamr-platform-sw, next to the base status monitor, real profile only; the simulated profiles keep `joint_state_broadcaster` as the only `lift_joint` writer, so one profile never has two writers (Q5) | I8 owner (data), arm status owner (consumer) |
 | `/manipulation/arm_status` | One entry per arm and per gripper | manipulation status node | arm status owner |
 | `/manipulation/motion_authority` | Who may move now, and why others are inhibited | motion arbiter of manipulation issue 24 | arm status owner, base side contract owner |
 | `/robot/configuration` | Configuration identity record and hash (section 7) | robot-side configuration node | Q11 |
@@ -347,6 +347,10 @@ even while `robot_readiness` is NOT_READY. It is admissible when all of these ho
    `CLOSED` in a fresh message, and while any source it needs is stale.
 4. The configuration identity matches (term 10, Q18). Otherwise the goal is refused with
    `CONFIGURATION_MISMATCH` before any pose target is applied.
+5. `lift_joint` is on `/joint_states`, that is the aux block is fresh, the CTL-017 link is `OK` and
+   `position_valid` is true. MoveIt plans from a complete current state, and there is no last-known
+   lift value. While the lift position is not valid, an arm recovery goal is refused with `NOT_READY`;
+   the operator recovers the lift first (`LiftToStop`, below).
 
 **Lift recovery goals (Q16).** `LiftToStop` to a calibrated stop is admissible while `robot_readiness` is
 NOT_READY when the lift is healthy (fresh aux block, CTL-017 `link == OK`, no latched lift fault, stop sensors
@@ -357,8 +361,8 @@ calibrated stop is reached, which is what term 8 needs.
 **Who sends a recovery goal (Q17).** For 2.0, only an operator action. There is no automatic recovery
 behaviour; revisit after the motion arbiter exists and there is bench evidence.
 
-Faults, staleness and pose in other subsystems (lift, grippers, the other arm when `arm` names
-one side) do not block a recovery goal by themselves. They only block it
+Apart from condition 5, faults, staleness and pose in other subsystems (lift, grippers, the other
+arm when `arm` names one side) do not block a recovery goal by themselves. They only block it
 when the arbiter's own rules use them.
 
 A recovery goal always goes through the motion arbiter and the hardware interlocks, never
