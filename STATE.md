@@ -16,6 +16,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 | Work package | Branch or PR | Status | Next step |
 |---|---|---|---|
 | C10 dataset quality gate | PR #25 | draft / synthetic evidence only | Work-package owner reviews placement and supplies real-episode evidence |
+| A3/I1 manipulation interfaces | feature/a3-i1-manipulation-interfaces (14912e18) | implementation verified 2026-11-07; not merged | review source and prepare PR |
 | Shared rules v2 (rollout step a, pilot) | PR #26 | in review | merge, then step (b) pin the harness |
 
 ## Decisions this repository implements
@@ -30,6 +31,8 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
   reusable workflow at `@main`; Watchdog reports 3 unpinned actions (2026-10-17).
 - C10 real-episode and production-acceptance evidence is not verified; see PR #25.
 - No runtime ownership or approved release pin is claimed for the proposed C10 reference checker.
+
+- A3/I1 interface generation, installed C++ consumer, schema checks and DDS exchange passed on 2026-11-07; runtime ownership, hardware behavior and physical safety acceptance are not verified.
 
 ## Not verified
 

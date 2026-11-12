@@ -1,0 +1,18 @@
+# Result code constants. NONE is the default/unset value.
+uint8 NONE=0
+uint8 SUCCEEDED=1
+uint8 UNREACHABLE=2
+uint8 PLANNING_FAILED=3
+uint8 EXECUTION_FAILED=4
+uint8 GRASP_FAILED=5
+uint8 OBJECT_DROPPED=6
+uint8 CONTACT_LIMIT=7
+uint8 TIMEOUT=8
+uint8 OBSERVATION_INVALID=9
+uint8 ACTION_REJECTED=10
+uint8 OWNERSHIP_LOST=11
+uint8 SAFETY_STOPPED=12
+uint8 ASSISTANCE_REQUIRED=13
+
+uint8 result_code
+string message

@@ -2,9 +2,11 @@
 
 import argparse
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 
@@ -25,6 +27,10 @@ def qos():
 def publish(topic, ready):
     rclpy.init()
     node = rclpy.create_node("verification_publisher")
+    stop_event = threading.Event()
+    previous_handler = signal.signal(
+        signal.SIGTERM, lambda signum, frame: stop_event.set()
+    )
     try:
         publisher = node.create_publisher(NavigationStatus, topic, qos())
         message = NavigationStatus()
@@ -46,13 +52,15 @@ def publish(topic, ready):
         message.sensors = [sensor]
         publisher.publish(message)
         Path(ready).write_text("published", encoding="utf-8")
-        # Publish exactly once: the late consumer must receive retained data.
+
         deadline = time.monotonic() + 30
-        while time.monotonic() < deadline:
+        while time.monotonic() < deadline and not stop_event.is_set():
             rclpy.spin_once(node, timeout_sec=0.1)
     finally:
+        signal.signal(signal.SIGTERM, previous_handler)
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 def check_values(message):

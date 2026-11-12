@@ -1,0 +1,62 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Requested gripper operation.
+uint8 UNKNOWN=0
+uint8 OPEN=1
+uint8 CLOSE=2
+uint8 GOTO_POSITION=3
+uint8 FORCE_LIMITED_CLOSE=4
+uint8 command
+
+# Whether target_position is specified.
+bool has_target_position
+
+# Target gripper position in metres.
+float64 target_position
+
+# Whether max_effort is specified.
+bool has_max_effort
+
+# Maximum permitted gripper effort in newtons.
+float64 max_effort
+
+# Maximum permitted execution time in seconds.
+# Zero means use the server-configured default.
+float64 timeout_sec
+
+# Ownership lease authorizing this command.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of the gripper command.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Final measured gripper position in metres.
+float64 final_position
+
+# Whether final_effort is available.
+bool final_effort_valid
+
+# Final measured gripper effort in newtons.
+float64 final_effort
+
+# Whether object detection is available.
+bool object_detected_valid
+
+# Whether an object was detected.
+bool object_detected
+---
+# Current measured gripper position in metres.
+float64 current_position
+
+# Whether the current effort/load measurement is available.
+bool effort_or_load_valid
+
+# Current measured effort or load.
+float64 current_effort_or_load
+
+# Whether contact detection is available.
+bool contact_detected_valid
+
+# Whether contact has been detected.
+bool contact_detected
