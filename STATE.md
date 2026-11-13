@@ -35,3 +35,17 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 
 - This step-(a) PR changes repository guidance only; it does not run ROS, DDS, hardware or production acceptance tests.
 - No physical robot, safety-chain, released binary or cross-version deployment evidence is claimed.
+
+## 12 November 2026 — proposed C9 component adjunct
+
+- Branch `satya/c9-components-proposed`, base 14912e1: preserves accepted C9 v1 bytes;
+  adds a proposed versioned mapping adjunct for upperbody#35/#36 and a source-model check.
+- Local schema/profile tests: 3 PASS; explicit pinned-model source check: 1 PASS.
+  Full ROS/DDS `tools/verify.sh` BLOCKED at absent Jazzy prerequisites on macOS.
+- New full-body action/capture mappings, stowed pose and release pin need owner review;
+  no actual recording or physical acceptance is verified.
+
+- 12 November continuation: generated mock/Gazebo/real URDFs pass check_urdf and
+  proposed C9 joint/type/range/interface checks in ROS Jazzy. Model arm/gripper
+  bounds populated; real lift retains no ROS command interface. Dedicated CI
+  retains generated evidence. Model checks do not grant motion/profile acceptance.
