@@ -8,7 +8,9 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>openamr_nav_msgs</depend>
   <depend>openamr_ui_msgs</depend>
+  <depend>openamrobot_manipulation_interfaces</depend>
   <depend>rosidl_typesupport_cpp</depend>
+  <depend>rosidl_runtime_cpp</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

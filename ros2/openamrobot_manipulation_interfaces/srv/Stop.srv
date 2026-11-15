@@ -1,0 +1,21 @@
+# Reason for stopping the requested motion.
+uint8 UNKNOWN=0
+uint8 OPERATOR_STOP=1
+uint8 SUPERSEDED_BY_NEW_GOAL=2
+uint8 reason
+
+# Scope of the stop request.
+uint8 SCOPE_UNKNOWN=0
+uint8 THIS_ARM=1
+uint8 ALL_ARMS=2
+uint8 scope
+
+# Required for THIS_ARM; must identify exactly one manipulator.
+# Ignored for ALL_ARMS.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+---
+# Outcome of the stop request.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# IDs of goals that were stopped.
+string[] stopped_goal_ids

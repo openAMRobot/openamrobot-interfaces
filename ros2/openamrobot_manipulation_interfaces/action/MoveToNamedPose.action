@@ -1,0 +1,31 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Name of the configured target pose.
+string pose_name
+
+# Motion speed scaling factor, from 0.0 to 1.0.
+# A value of 1.0 represents full configured speed.
+float64 speed_scale
+
+# Maximum permitted execution time in seconds.
+# Zero means use the server-configured default.
+float64 timeout_sec
+
+# Ownership lease authorizing this motion.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of the motion.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Final measured end-effector pose.
+geometry_msgs/PoseStamped final_pose
+---
+# Motion progress from 0.0 to 1.0.
+float32 progress_fraction
+
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Elapsed execution time in seconds.
+float64 elapsed_sec

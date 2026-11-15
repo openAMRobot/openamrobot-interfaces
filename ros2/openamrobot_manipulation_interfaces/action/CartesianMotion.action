@@ -1,0 +1,37 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Primary Cartesian target and tolerances.
+openamrobot_manipulation_interfaces/PlacementGoal placement_goal
+
+# Optional ordered Cartesian waypoints.
+# If empty, placement_goal.target_pose is used as the single target.
+geometry_msgs/PoseStamped[] waypoints
+
+# Maximum linear speed in metres per second.
+float64 max_linear_speed
+
+# Maximum angular speed in radians per second.
+float64 max_angular_speed
+
+# Maximum permitted execution time in seconds.
+# Zero means use the server-configured default.
+float64 timeout_sec
+
+# Ownership lease authorizing this motion.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of the Cartesian motion.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Final measured end-effector pose.
+geometry_msgs/PoseStamped final_pose
+---
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Motion progress from 0.0 to 1.0.
+float32 percent_complete
+
+# Estimated remaining execution time in seconds.
+float64 time_remaining_estimate_sec
