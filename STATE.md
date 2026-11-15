@@ -36,4 +36,5 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 ## Not verified
 
 - I8 verification is local ROS 2 Jazzy software verification only; firmware integration, physical robot, safety-chain and hardware validation are not established (2026-11-11).
+- PR #38 review follow-up: corrected BaseAuxStatus header timestamp comment; added clock-contract and ownership-gap regression checks; named participant assignments remain TBD (2026-11-15).
 - No physical robot, safety-chain, released binary or cross-version deployment evidence is claimed.

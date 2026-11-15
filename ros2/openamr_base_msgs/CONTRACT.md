@@ -23,7 +23,20 @@ This package only reports their result.
 | `/base/status` | `BaseStatus` | base-controller firmware (Teensy Gate A, STM32H723ZG Gate B), [openamr-platform-fw#10](https://github.com/openAMRobot/openamr-platform-fw/issues/10) | `navigation_status_node.py` in openamr-platform-sw, operator UI (openamrobot-ui #54), manipulation (openamrobot-manipulation #7), diagnostics, logging, tests |
 | `/base/aux_status` | `BaseAuxStatus` | base-controller firmware, relayed from the lift node CTL-017 over CAN3 ([openamr-platform-fw#12](https://github.com/openAMRobot/openamr-platform-fw/issues/12), D17) | same as above |
 
-Owners for each producer and consumer are recorded in the PR description.
+The mapping below records the accountable repository/component and role known for this
+proposal. Individual names are intentionally marked **TBD** where no assignment is recorded;
+this table is not evidence that those assignments have been accepted. Resolve the TBD entries
+before treating Issue #30's owner requirement as complete.
+
+| Interface participant | Accountable repository / component | Owner role | Named owner |
+|---|---|---|---|
+| `/base/status` producer (Teensy Gate A / STM32H723ZG Gate B) | `openamr-platform-fw` | Base-controller firmware maintainer | TBD — assignment required |
+| `/base/aux_status` producer/relay | `openamr-platform-fw` (CTL-017 CAN3 integration) | Firmware / lift-interface maintainer | TBD — assignment required |
+| Navigation consumer | `openamr-platform-sw` (`navigation_status_node.py`) | Platform software maintainer | TBD — assignment required |
+| Operator UI consumer | `openamrobot-ui` (#54) | UI maintainer | TBD — assignment required |
+| Manipulation consumer | `openamrobot-manipulation` (#7) | Manipulation maintainer | TBD — assignment required |
+| Diagnostics and logging consumers | Owning runtime / observability components | Diagnostics / logging maintainer | TBD — component and owner assignment required |
+| Interface regression tests | `openamrobot-interfaces` | Repository software lead / test maintainer | TBD — assignment required |
 
 ## QoS and publish behavior
 

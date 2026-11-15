@@ -7,7 +7,7 @@
 # Decision 13: position sources, homing semantics, raw/mapped fault rules and disagreement
 # threshold remain open. Do not interpret proposed fields/enums as an approved device map.
 
-std_msgs/Header header            # stamp = base controller monotonic time base, diagnostic only
+std_msgs/Header header            # ROS time when available; diagnostic only, never the freshness clock
 
 uint16 CONTRACT_VERSION=1
 uint16 contract_version

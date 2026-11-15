@@ -73,6 +73,22 @@ class BaseMsgsTests(unittest.TestCase):
             self.assertEqual(versions[0], 1, name)   # frozen I8 contract version starts at 1
             self.assertIn(("uint16", "contract_version"), fields, name)
 
+    def test_header_stamp_clock_contract_is_consistent(self):
+        contract = (PKG / "CONTRACT.md").read_text()
+        expected = "`header.stamp` is ROS time when available and is diagnostic only. Use `monotonic_us` for"
+        self.assertIn(expected, contract)
+        for name in ("BaseStatus", "BaseAuxStatus"):
+            source = messages()[name].read_text()
+            self.assertRegex(source, r"(?im)(?:^#.*header\.stamp.*ROS time.*diagnostic only|^std_msgs/Header header.*ROS time.*diagnostic only)")
+            self.assertNotRegex(source, r"(?im)^\s*std_msgs/Header header.*monotonic")
+            self.assertRegex(source, r"(?m)^uint64 monotonic_us\b")
+
+    def test_producer_consumer_ownership_gaps_are_explicit(self):
+        contract = (PKG / "CONTRACT.md").read_text()
+        self.assertIn("| Interface participant | Accountable repository / component | Owner role | Named owner |", contract)
+        self.assertIn("TBD — assignment required", contract)
+        self.assertNotIn("Owners for each producer and consumer are recorded in the PR description.", contract)
+
     def test_status_identity_and_timing_fields(self):
         _, fields = parse(messages()["BaseStatus"])
         for expected in (
