@@ -93,6 +93,32 @@ class BaseMsgsTests(unittest.TestCase):
         self.assertIn("| Manipulation consumer and authoritative arm-status producer | `openamrobot-manipulation` (#7) | Manipulation interface and consumer owner | @Brinex45, alongside @panthera-momagdii |", contract)
         self.assertNotIn("Owners for each producer and consumer are recorded in the PR description.", contract)
 
+    def test_lift_permit_fields_and_fail_closed_contract(self):
+        constants, fields = parse(messages()["BaseAuxStatus"])
+        names = {name for _, name, _ in constants}
+        for expected in (
+            ("uint8", "lift_permit"),
+            ("uint16", "lift_permit_reason_code"),
+            ("uint32", "lift_permit_max_age_ms"),
+            ("uint32", "boot_id"),
+            ("uint32", "sequence"),
+        ):
+            self.assertIn(expected, fields)
+        self.assertIn("LIFT_PERMIT_REASON_NONE", names)
+        self.assertIn("LIFT_PERMIT_REASON_UNKNOWN", names)
+        contract = (PKG / "CONTRACT.md").read_text()
+        for required in (
+            "defaults to `OBS_NO` at boot/reset",
+            "duplicate, out-of-order",
+            "wrong-session and pre-reboot",
+            "withdraws permission immediately",
+            "CTL-017 is the final local actuator gate",
+            "`MOVE_TO_STOP`",
+            "`START_HOMING`",
+            "numerical maximum age, refresh rate and consumer timeout remain open",
+        ):
+            self.assertIn(required, contract)
+
     def test_status_identity_and_timing_fields(self):
         _, fields = parse(messages()["BaseStatus"])
         for expected in (
