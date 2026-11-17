@@ -81,8 +81,12 @@ does not replace the independent E-01 hardwired chain.
   the consumer withdraws acceptance when that age expires or its independently configured
   timeout is exceeded. The numerical maximum age, refresh rate and consumer timeout remain open.
 - `lift_permit_reason_code` is `LIFT_PERMIT_REASON_NONE` only when permission is asserted.
-  Denied or unknown permission carries a non-zero reason. The complete deterministic reason map
-  and central fault-registry relationship remain open.
+  Denied or unknown permission carries a non-zero reason. The proposed reason values distinguish
+  base moving, invalid base feedback, missing/stale arm status, unsafe arm pose, active arm
+  motion, arm-controller fault, base fault and CTL-017 link loss. These are permit-diagnostic
+  reasons, not central `BaseFault` IDs; the final mapping and any registry relationship require
+  owner review. Consumer-detected permit expiry is reported by CTL-017 diagnostics, not inferred
+  as a producer-side reason.
 - Any prerequisite becoming false, invalid, stale or out of sequence withdraws permission
   immediately. Permission is false after communication loss or restart of either controller
   until fresh, valid evidence from the new sessions arrives. Restoration never replays a previous
