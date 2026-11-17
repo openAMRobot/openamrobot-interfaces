@@ -141,10 +141,6 @@ class BaseMsgsTests(unittest.TestCase):
             self.assertIn(required, contract)
         self.assertNotIn("robot lift/auxiliary interlock enforcement owner and handshake", contract)
         self.assertNotIn("the exact carry pose and robot control owner remain unresolved", contract)
-        return
-        # original
-        ):
-            self.assertIn(required, contract)
 
     def test_status_identity_and_timing_fields(self):
         _, fields = parse(messages()["BaseStatus"])
