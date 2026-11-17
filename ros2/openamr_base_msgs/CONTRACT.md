@@ -48,13 +48,58 @@ The PR #38 discussion records the following ownership direction:
 - CTL-017 remains the final local enforcement point for the permit.
 - Build 1 defines `STOWED` as the only safe arm configuration. No other safe pose is defined.
 
-This records the agreed ownership direction, not a completed wire contract or a safety approval.
-The exact `ArmStatus` schema, freshness threshold and approved STOWED joint-space definition
-still require manipulation-side definition and sign-off. The `BaseAuxStatus` permit fields,
-reason mapping, maximum age, sequence/boot handling, withdrawal behaviour and restart
-invalidation also remain to be specified and tested. The authoritative source and transport for
-fresh base-stopped evidence remain unresolved. Until those details are agreed, consumers must
-not infer permission from missing, stale, invalid or unknown inputs.
+This records the agreed ownership direction, not a safety approval. The proposed
+`BaseAuxStatus` representation now includes `lift_permit`, `lift_permit_reason_code` and
+`lift_permit_max_age_ms`; the message's `boot_id` and `sequence` identify the permit
+producer boot and publication order. A zero maximum age is invalid. The exact non-zero age
+limit, reason-code mapping, sequence-wrap rule and consumer-side timeout still require agreement.
+
+The manipulation-side `ArmStatus` remains a separate cross-repository interface. Its exact
+schema, freshness threshold and approved STOWED joint-space definition require manipulation-side
+definition and sign-off. The authoritative source and transport for fresh base-stopped evidence
+also remain unresolved. These are proposed interface fields and rules, not a completed safety
+function or physical validation.
+
+## Lift-permit contract (proposed)
+
+The STM32H723 base controller is the sole authoritative producer of `lift_permit`. The permit
+is an observation/functional interlock command to CTL-017; it is not a safety-rated signal and
+does not replace the independent E-01 hardwired chain.
+
+- The permit defaults to `OBS_NO` at boot/reset. Permission may be asserted only when both
+  wheel encoders independently provide valid, fresh, current-session evidence that the base is
+  stopped, and both arms report the approved Build 1 `STOWED` configuration with no active
+  arm motion or trajectory. Relevant base faults, inhibits or loss of supervision deny permission.
+- The D14 base-stopped candidate is absolute linear velocity below 0.01 m/s and absolute angular
+  velocity below 0.02 rad/s continuously for 500 ms, derived from both wheel encoders and actual
+  drivetrain geometry. This remains proposed pending the B5 bench measurement and owner approval;
+  it is not proof of physical standstill.
+- `BaseAuxStatus.boot_id` identifies the permit-producing controller boot and
+  `BaseAuxStatus.sequence` orders permit publications. Consumers reject duplicate, out-of-order,
+  wrong-session and pre-reboot evidence. The exact uint32 wrap comparison rule remains open.
+- Consumers calculate age from local receipt time. `lift_permit_max_age_ms` must be non-zero;
+  the consumer withdraws acceptance when that age expires or its independently configured
+  timeout is exceeded. The numerical maximum age, refresh rate and consumer timeout remain open.
+- `lift_permit_reason_code` is `LIFT_PERMIT_REASON_NONE` only when permission is asserted.
+  Denied or unknown permission carries a non-zero reason. The complete deterministic reason map
+  and central fault-registry relationship remain open.
+- Any prerequisite becoming false, invalid, stale or out of sequence withdraws permission
+  immediately. Permission is false after communication loss or restart of either controller
+  until fresh, valid evidence from the new sessions arrives. Restoration never replays a previous
+  lift command.
+- CTL-017 is the final local actuator gate. It must reject both `MOVE_TO_STOP` and
+  `START_HOMING` without a current permit; while moving/homing, withdrawal or expiry requires
+  STOP, discarding the active target and rejecting subsequent motion until a new command.
+- The permit must be continuously observable by CTL-017 independently of lift-command traffic.
+  A dedicated cyclic CAN permit PDO is preferred. Its COB-ID, PDO/OD mapping, receive timeout
+  and exact CTL-017 v1 object-dictionary representation must be agreed with the CTL-017 owner;
+  the emulator must use the same canonical mapping.
+
+The exact `ArmStatus` message fields, freshness threshold, active-trajectory representation and
+STOWED joint-space definition are owned by manipulation and require sign-off from the responsible
+joint-space owner. No heartbeat or generic readiness flag substitutes for measured arm status.
+Missing, unsupported, stale, invalid, moving, trajectory-active or wrong-session arm feedback
+denies permission.
 
 ## QoS and publish behavior
 
