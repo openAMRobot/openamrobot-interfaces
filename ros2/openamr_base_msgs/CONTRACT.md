@@ -23,20 +23,38 @@ This package only reports their result.
 | `/base/status` | `BaseStatus` | base-controller firmware (Teensy Gate A, STM32H723ZG Gate B), [openamr-platform-fw#10](https://github.com/openAMRobot/openamr-platform-fw/issues/10) | `navigation_status_node.py` in openamr-platform-sw, operator UI (openamrobot-ui #54), manipulation (openamrobot-manipulation #7), diagnostics, logging, tests |
 | `/base/aux_status` | `BaseAuxStatus` | base-controller firmware, relayed from the lift node CTL-017 over CAN3 ([openamr-platform-fw#12](https://github.com/openAMRobot/openamr-platform-fw/issues/12), D17) | same as above |
 
-The mapping below records the accountable repository/component and role known for this
-proposal. Individual names are intentionally marked **TBD** where no assignment is recorded;
-this table is not evidence that those assignments have been accepted. Resolve the TBD entries
-before treating Issue #30's owner requirement as complete.
+The mapping below records the accountable repository/component, role and named owner
+where ownership has been confirmed in the PR #38 discussion. Remaining **TBD** entries are
+genuine unassigned responsibilities; this table does not imply approval of the proposed message
+schema or safety behaviour.
 
 | Interface participant | Accountable repository / component | Owner role | Named owner |
 |---|---|---|---|
-| `/base/status` producer (Teensy Gate A / STM32H723ZG Gate B) | `openamr-platform-fw` | Base-controller firmware maintainer | TBD — assignment required |
-| `/base/aux_status` producer/relay | `openamr-platform-fw` (CTL-017 CAN3 integration) | Firmware / lift-interface maintainer | TBD — assignment required |
-| Navigation consumer | `openamr-platform-sw` (`navigation_status_node.py`) | Platform software maintainer | TBD — assignment required |
-| Operator UI consumer | `openamrobot-ui` (#54) | UI maintainer | TBD — assignment required |
-| Manipulation consumer | `openamrobot-manipulation` (#7) | Manipulation maintainer | TBD — assignment required |
+| `/base/status` producer (Teensy Gate A / STM32H723ZG Gate B) | `openamr-platform-fw` | I8 base-controller firmware/electrical owner | @Evans-Kwashie |
+| `/base/aux_status` producer/relay | `openamr-platform-fw` (CTL-017 CAN3 integration) | I8 firmware/electrical and lift-interface owner | @Evans-Kwashie |
+| Navigation consumer | `openamr-platform-sw` (`navigation_status_node.py`) | Accountable platform software consumer owner | @skunal3318 (Mohamed reviewing) |
+| Operator UI consumer | `openamrobot-ui` (#54) | UI consumer/integration owner | @panthera-momagdii |
+| Manipulation consumer and authoritative arm-status producer | `openamrobot-manipulation` (#7) | Manipulation interface and consumer owner | @Brinex45, alongside @panthera-momagdii |
 | Diagnostics and logging consumers | Owning runtime / observability components | Diagnostics / logging maintainer | TBD — component and owner assignment required |
 | Interface regression tests | `openamrobot-interfaces` | Repository software lead / test maintainer | TBD — assignment required |
+
+## Cross-repository lift-interlock ownership (working agreement)
+
+The PR #38 discussion records the following ownership direction:
+
+- I8/base-controller firmware is the sole producer of `lift_permit`.
+- Manipulation owns the authoritative, validated measured `ArmStatus` producer and its separate interface.
+- Platform software owns its `lift_permit` consumer integration.
+- CTL-017 remains the final local enforcement point for the permit.
+- Build 1 defines `STOWED` as the only safe arm configuration. No other safe pose is defined.
+
+This records the agreed ownership direction, not a completed wire contract or a safety approval.
+The exact `ArmStatus` schema, freshness threshold and approved STOWED joint-space definition
+still require manipulation-side definition and sign-off. The `BaseAuxStatus` permit fields,
+reason mapping, maximum age, sequence/boot handling, withdrawal behaviour and restart
+invalidation also remain to be specified and tested. The authoritative source and transport for
+fresh base-stopped evidence remain unresolved. Until those details are agreed, consumers must
+not infer permission from missing, stale, invalid or unknown inputs.
 
 ## QoS and publish behavior
 
@@ -143,9 +161,11 @@ mapping to the central fault registry, and the threshold/action for measured-ver
 disagreement remain unresolved. The fields in this draft are a working representation, not
 approval of a particular sensor, encoder, CAN object or firmware owner.
 
-The lift interlock requirement is base confirmed stopped AND both arms in the approved safe
-pose (stowed or carry). UNKNOWN, invalid or stale base/arm observations do not satisfy either
-condition. The exact carry pose and the robot enforcement owner/handshake remain open.
+The Build 1 lift interlock requires fresh, valid base-confirmed-stopped evidence AND both
+arms in the approved `STOWED` configuration. No other safe arm pose, including CARRY, is
+defined for Build 1. UNKNOWN, invalid or stale base/arm observations do not satisfy either
+condition. CTL-017 is the final local enforcement point. The authoritative source/transport for
+base-stopped evidence and the complete cross-controller permit wire semantics remain open.
 
 ## Field validity
 
@@ -264,8 +284,9 @@ charging command/state lifecycle, `reboot_request_pending`, and `reset_cause` re
 - A separate base-stopped evidence message/topic, its producer, QoS, rate and timeout (Decisions 1 and 8).
 - ResetBaseController.srv (Decision 11).
 - MB7060 range topic names, rate and publisher (Decision 12).
-- Drive configuration (2000h, 1017h), brakes and the robot lift-interlock enforcement owner.
-  The simulation-side guard is a mirror only, not the robot enforcement implementation.
+- Drive configuration (2000h, 1017h), brakes, and the unresolved base-stopped evidence source/transport
+  and cross-controller lift-permit wire contract. CTL-017 is the local enforcement point; the
+  simulation-side guard is a mirror only, not the robot enforcement implementation.
 
 ## Open decisions
 
