@@ -86,7 +86,11 @@ class BaseMsgsTests(unittest.TestCase):
     def test_producer_consumer_ownership_gaps_are_explicit(self):
         contract = (PKG / "CONTRACT.md").read_text()
         self.assertIn("| Interface participant | Accountable repository / component | Owner role | Named owner |", contract)
-        self.assertIn("TBD — assignment required", contract)
+        self.assertIn("TBD — assignment required", contract)  # diagnostics/logging and test ownership remain open
+        self.assertIn("| `/base/status` producer (Teensy Gate A / STM32H723ZG Gate B) | `openamr-platform-fw` | I8 base-controller firmware/electrical owner | @Evans-Kwashie |", contract)
+        self.assertIn("| Navigation consumer | `openamr-platform-sw` (`navigation_status_node.py`) | Accountable platform software consumer owner | @skunal3318 (Mohamed reviewing) |", contract)
+        self.assertIn("| Operator UI consumer | `openamrobot-ui` (#54) | UI consumer/integration owner | @panthera-momagdii |", contract)
+        self.assertIn("| Manipulation consumer and authoritative arm-status producer | `openamrobot-manipulation` (#7) | Manipulation interface and consumer owner | @Brinex45, alongside @panthera-momagdii |", contract)
         self.assertNotIn("Owners for each producer and consumer are recorded in the PR description.", contract)
 
     def test_status_identity_and_timing_fields(self):
