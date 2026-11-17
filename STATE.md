@@ -10,6 +10,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 - Readiness: R1 (evidence: ROS 2 Jazzy workflow running `tools/verify.sh` on main, run 37936438992)
 - Owner role: software-lead
 - Verification: `bash tools/verify.sh`; last PASS on main at 87ab8a9 (2026-10-09), run 37936438992
+- I8 verification: `bash tools/verify.sh` passed on the working tree (2026-11-11); evidence at `.verification/run.LmU15W`.
 
 ## Current work
 
@@ -17,6 +18,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 |---|---|---|---|
 | C10 dataset quality gate | PR #25 | draft / synthetic evidence only | Work-package owner reviews placement and supplies real-episode evidence |
 | Shared rules v2 (rollout step a, pilot) | PR #26 | in review | merge, then step (b) pin the harness |
+| I8 base-controller interfaces | Issue #30 / PR #38 / `feat/i8-base-controller-msgs` | five-message implementation with proposed lift-permit fields and ArmStatus dependency documented; contract remains proposed (2026-11-17) | resolve three-vs-five scope, ArmStatus sign-off, permit timing/CAN mapping, diagnostics owner; rerun hosted verification |
 | StopState.msg for the stop-gate contract (platform-sw#119) | PR #35 | changes requested (panthera-momagdii) - rebased on main `14912e1`, hosted CI/DCO/CLA green at head `025ee28caf7e72b31e9b134d09e5fa3a8606aac0` | push, Mohamed approves same day; then platform-sw#90 repins nav-status-tests.yml from the fork pin to the merge SHA |
 
 ## Decisions this repository implements
@@ -34,5 +36,7 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 
 ## Not verified
 
-- This step-(a) PR changes repository guidance only; it does not run ROS, DDS, hardware or production acceptance tests.
+- I8 verification is local ROS 2 Jazzy software verification only; firmware integration, physical robot, safety-chain and hardware validation are not established (2026-11-11).
+- PR #38 review follow-up: timestamp thread corrected and resolved; named I8/platform/UI/manipulation owners recorded; diagnostics/logging owner remains TBD (2026-11-17).
+- PR #38 (2026-11-17): proposed `lift_permit`, reason-code candidates and maximum-age field added to `BaseAuxStatus`; `ArmStatus` dependency and fail-closed/restart/withdrawal semantics documented; stale Decision 8 ownership wording corrected; 24 static checks; Jazzy compatibility snapshot regenerated. Hosted verification pending.
 - No physical robot, safety-chain, released binary or cross-version deployment evidence is claimed.
