@@ -13,9 +13,20 @@ std_msgs/Header header            # ROS time when available; diagnostic only, ne
 uint16 CONTRACT_VERSION=1
 uint16 contract_version
 
-uint32 boot_id                    # same value as in the BaseStatus of this boot
-uint32 sequence
+uint32 boot_id                    # same value as BaseStatus; identifies the lift-permit producer boot
+uint32 sequence                    # BaseAuxStatus sequence; also orders the lift-permit observations
 uint64 monotonic_us
+
+# --- supervised lift permit (I8 is the sole producer) ---
+# These fields report the same permit that is enforced locally by CTL-017.
+# boot_id and sequence above identify the permit producer boot and publication order.
+# Consumers use local receipt time; they must not use header.stamp for permit freshness.
+# A zero maximum age is invalid. The agreed non-zero limit and consumer-side ceiling remain open.
+uint16 LIFT_PERMIT_REASON_NONE=0
+uint16 LIFT_PERMIT_REASON_UNKNOWN=1
+uint8 lift_permit                 # OBS_UNKNOWN/OBS_NO/OBS_YES; default and boot state are OBS_NO
+uint16 lift_permit_reason_code    # NONE only when permitted; non-zero when denied/unknown; mapping pending
+uint32 lift_permit_max_age_ms     # maximum accepted receipt age; 0 is invalid
 
 uint8 OBS_UNKNOWN=0
 uint8 OBS_NO=1
