@@ -106,6 +106,23 @@ class BaseMsgsTests(unittest.TestCase):
             self.assertIn(expected, fields)
         self.assertIn("LIFT_PERMIT_REASON_NONE", names)
         self.assertIn("LIFT_PERMIT_REASON_UNKNOWN", names)
+        reason_values = {
+            name: value for _, name, value in constants
+            if name.startswith("LIFT_PERMIT_REASON_")
+        }
+        self.assertEqual(len(reason_values), len(set(reason_values.values())))
+        for reason in (
+            "LIFT_PERMIT_REASON_BASE_MOVING",
+            "LIFT_PERMIT_REASON_BASE_FEEDBACK_INVALID",
+            "LIFT_PERMIT_REASON_ARM_STATUS_MISSING",
+            "LIFT_PERMIT_REASON_ARM_STATUS_STALE",
+            "LIFT_PERMIT_REASON_ARM_POSE_UNSAFE",
+            "LIFT_PERMIT_REASON_ARM_MOTION_ACTIVE",
+            "LIFT_PERMIT_REASON_ARM_CONTROLLER_FAULT",
+            "LIFT_PERMIT_REASON_BASE_FAULT",
+            "LIFT_PERMIT_REASON_CTL017_LINK_LOST",
+        ):
+            self.assertIn(reason, reason_values)
         contract = (PKG / "CONTRACT.md").read_text()
         for required in (
             "defaults to `OBS_NO` at boot/reset",
