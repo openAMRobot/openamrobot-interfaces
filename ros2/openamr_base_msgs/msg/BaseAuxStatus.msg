@@ -24,6 +24,15 @@ uint64 monotonic_us
 # A zero maximum age is invalid. The agreed non-zero limit and consumer-side ceiling remain open.
 uint16 LIFT_PERMIT_REASON_NONE=0
 uint16 LIFT_PERMIT_REASON_UNKNOWN=1
+uint16 LIFT_PERMIT_REASON_BASE_MOVING=2
+uint16 LIFT_PERMIT_REASON_BASE_FEEDBACK_INVALID=3
+uint16 LIFT_PERMIT_REASON_ARM_STATUS_MISSING=4
+uint16 LIFT_PERMIT_REASON_ARM_STATUS_STALE=5
+uint16 LIFT_PERMIT_REASON_ARM_POSE_UNSAFE=6
+uint16 LIFT_PERMIT_REASON_ARM_MOTION_ACTIVE=7
+uint16 LIFT_PERMIT_REASON_ARM_CONTROLLER_FAULT=8
+uint16 LIFT_PERMIT_REASON_BASE_FAULT=9
+uint16 LIFT_PERMIT_REASON_CTL017_LINK_LOST=10
 uint8 lift_permit                 # OBS_UNKNOWN/OBS_NO/OBS_YES; default and boot state are OBS_NO
 uint16 lift_permit_reason_code    # NONE only when permitted; non-zero when denied/unknown; mapping pending
 uint32 lift_permit_max_age_ms     # maximum accepted receipt age; 0 is invalid
