@@ -1,9 +1,10 @@
 # Auxiliary-device block on /base/aux_status. PROPOSED, not approved (I8 proposal rev 4).
-# Includes lift measured and declared position as separate values, validity, homing, motion,
-# stop sensors and faults; head light; Getac power-good; moving-adapter-plate E-stop.
-# Reports observations only. It does not enforce the lift interlock or prove a safety function.
-# Ownership direction: I8 produces lift_permit; manipulation provides authoritative ArmStatus;
-# CTL-017 enforces the permit locally. Wire fields and freshness/withdrawal semantics remain open.
+# Includes lift measured and declared position, the I8 lift-permit decision, validity, homing,
+# motion, stop sensors and faults; head light; Getac power-good; moving-adapter-plate E-stop.
+# This ROS status topic reports the permit; CTL-017 enforces it locally over the CAN interface.
+# It is not a safety function and does not prove a safety function.
+# Ownership: I8 produces lift_permit; manipulation provides authoritative ArmStatus; CTL-017
+# is the final local actuator gate. Numerical freshness limits and the CAN PDO/OD mapping remain open.
 # 0 is UNKNOWN. Freshness comes from consumer-local receipt time, never header.stamp.
 # Decision 13: position sources, homing semantics, raw/mapped fault rules and disagreement
 # threshold remain open. Do not interpret proposed fields/enums as an approved device map.
