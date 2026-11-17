@@ -53,6 +53,14 @@
               "type": "uint8",
               "value": 2
             },
+            "msg/LIFT_PERMIT_REASON_NONE": {
+              "type": "uint16",
+              "value": 0
+            },
+            "msg/LIFT_PERMIT_REASON_UNKNOWN": {
+              "type": "uint16",
+              "value": 1
+            },
             "msg/OBS_NO": {
               "type": "uint8",
               "value": 1
@@ -98,7 +106,7 @@
               "value": 0
             }
           },
-          "type_hash": "RIHS01_fe993c816f75991ac226947a076c65c167fa9441fd6fb620ce31975defe93ecd"
+          "type_hash": "RIHS01_23dcaedd986387b6c111a52eed56866cc1a455f49895b3a93a851f5abff2cd6d"
         },
         "msg/BaseFault": {
           "constants": {
