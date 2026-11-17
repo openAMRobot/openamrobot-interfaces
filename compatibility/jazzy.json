@@ -104,6 +104,42 @@
             "msg/STOP_UNKNOWN": {
               "type": "uint8",
               "value": 0
+            },
+            "msg/LIFT_PERMIT_REASON_BASE_MOVING": {
+              "type": "uint16",
+              "value": 2
+            },
+            "msg/LIFT_PERMIT_REASON_BASE_FEEDBACK_INVALID": {
+              "type": "uint16",
+              "value": 3
+            },
+            "msg/LIFT_PERMIT_REASON_ARM_STATUS_MISSING": {
+              "type": "uint16",
+              "value": 4
+            },
+            "msg/LIFT_PERMIT_REASON_ARM_STATUS_STALE": {
+              "type": "uint16",
+              "value": 5
+            },
+            "msg/LIFT_PERMIT_REASON_ARM_POSE_UNSAFE": {
+              "type": "uint16",
+              "value": 6
+            },
+            "msg/LIFT_PERMIT_REASON_ARM_MOTION_ACTIVE": {
+              "type": "uint16",
+              "value": 7
+            },
+            "msg/LIFT_PERMIT_REASON_ARM_CONTROLLER_FAULT": {
+              "type": "uint16",
+              "value": 8
+            },
+            "msg/LIFT_PERMIT_REASON_BASE_FAULT": {
+              "type": "uint16",
+              "value": 9
+            },
+            "msg/LIFT_PERMIT_REASON_CTL017_LINK_LOST": {
+              "type": "uint16",
+              "value": 10
             }
           },
           "type_hash": "RIHS01_23dcaedd986387b6c111a52eed56866cc1a455f49895b3a93a851f5abff2cd6d"
