@@ -133,6 +133,10 @@ class BaseMsgsTests(unittest.TestCase):
             "`MOVE_TO_STOP`",
             "`START_HOMING`",
             "numerical maximum age, refresh rate and consumer timeout remain open",
+            "separate manipulation-owned runtime interface",
+            "measured joint feedback for both arms",
+            "Build 1 accepts only the",
+            "publisher boot/session identity and sequence number",
         ):
             self.assertIn(required, contract)
 
