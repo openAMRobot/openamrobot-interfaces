@@ -60,6 +60,35 @@ definition and sign-off. The authoritative source and transport for fresh base-s
 also remain unresolved. These are proposed interface fields and rules, not a completed safety
 function or physical validation.
 
+## Manipulation ArmStatus dependency (separate proposed interface)
+
+The lift-permit producer consumes a separate manipulation-owned runtime interface, proposed at
+`openamrobot_manipulation_interfaces/msg/ArmStatus.msg` on `/manipulation/arm_status`.
+This is not an extension of the already-approved I1 command/action schema.
+
+The proposed bimanual snapshot must provide:
+
+- Measured joint feedback for both arms, and measured end-effector pose where available.
+  Commanded targets and action goals are not evidence of actual pose.
+- Stable per-arm identities matching the device manifest.
+- A coordinated bimanual configuration classification. Build 1 accepts only the
+  manipulation-approved `STOWED` configuration; `CARRY`, `OTHER`, unsupported and
+  `UNKNOWN` do not grant lift permission in Build 1.
+- Explicit motion state, including trajectory execution, jogging/direct motion, stopping and
+  idle/holding; active motion inhibits permission.
+- Controller health, joint-feedback validity and explicit invalid/unavailable states.
+- Snapshot timestamp, publisher boot/session identity and sequence number.
+
+Both arms must independently provide valid, fresh, current-session feedback. If either arm is
+missing, stale, invalid, inconsistent, faulted, moving, trajectory-active or from an old session,
+I8 denies or withdraws the permit. A heartbeat or generic readiness flag is not a substitute for
+measured arm status.
+
+Manipulation owns the schema and publisher. The exact maximum feedback age, pose enum details,
+STOWED joint-space values/tolerances/settling criteria, and the accountable joint-space approver
+remain pending manipulation-side agreement. Until those are signed off, this dependency remains
+Proposed and the lift permit must remain denied for an unapproved pose.
+
 ## Lift-permit contract (proposed)
 
 The STM32H723 base controller is the sole authoritative producer of `lift_permit`. The permit
