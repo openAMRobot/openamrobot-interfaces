@@ -12,7 +12,7 @@ open decisions.
 - BaseStatus on /base/status: controller-state/readiness proposal, identity, timing/freshness,
   diagnostic observations, faults and proposed subsystem/constraint summaries. E-01-derived
   state semantics remain open under Decision 2.
-- `BaseAuxStatus` on `/base/aux_status`: lift measured and declared position (separate), position validity, proposed homing state, head light, Getac power-good, second E-stop.
+- `BaseAuxStatus` on `/base/aux_status`: lift measured and declared position (separate), position validity, proposed homing state, supervised `lift_permit` proposal, head light, Getac power-good, second E-stop.
 - `BaseFault`: one fault/diagnostic entry. Normal events, reset causes and UI Stop are represented by state fields, not fault codes.
 - `BaseSubsystemStatus`, `BaseMotionConstraint`: provisional nested messages (decision 1).
 
