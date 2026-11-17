@@ -38,5 +38,5 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
 
 - I8 verification is local ROS 2 Jazzy software verification only; firmware integration, physical robot, safety-chain and hardware validation are not established (2026-11-11).
 - PR #38 review follow-up: timestamp thread corrected and resolved; named I8/platform/UI/manipulation owners recorded; diagnostics/logging owner remains TBD (2026-11-17).
-- PR #38 head `5b8efed328f802d31645d14f8005082ac3b1b5ba`: proposed `lift_permit`, reason-code candidates and maximum-age field added to `BaseAuxStatus`; `ArmStatus` dependency and fail-closed/restart/withdrawal semantics documented; 23 static checks; Jazzy compatibility snapshot regenerated. Hosted verification pending (2026-11-17).
+- PR #38 head `5b8efed328f802d31645d14f8005082ac3b1b5ba`: proposed `lift_permit`, reason-code candidates and maximum-age field added to `BaseAuxStatus`; `ArmStatus` dependency and fail-closed/restart/withdrawal semantics documented; 24 static checks; Jazzy compatibility snapshot regenerated. Hosted verification pending (2026-11-17).
 - No physical robot, safety-chain, released binary or cross-version deployment evidence is claimed.
