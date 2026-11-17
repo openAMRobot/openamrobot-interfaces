@@ -383,10 +383,13 @@ The following remain open in I8 rev4:
   proposed individual IDs still need registry-owner review.
 - Decision 6: reset-cause enum after STM32H723 reset-flag verification.
 - Decision 7: direction-specific travel inhibit when floor coverage is lost, with Navigation.
-- Decision 8: robot lift/auxiliary interlock enforcement owner and handshake. The requirement
-  is base confirmed stopped AND both arms in the approved safe pose (stowed or carry);
-  UNKNOWN, invalid or stale inputs do not satisfy it. The exact carry pose and robot control
-  owner remain unresolved. The simulation-side guard is not a substitute.
+- Decision 8: the enforcement ownership direction is now recorded in the cross-repository
+  working agreement: I8/base controller is the sole `lift_permit` producer, manipulation owns
+  the authoritative measured `ArmStatus` producer, and CTL-017 is the final local enforcement
+  point. Build 1 accepts only the approved `STOWED` configuration. Remaining open details are
+  the authoritative base-stopped evidence source/transport, ArmStatus schema/freshness and
+  STOWED joint-space sign-off, and the cyclic CAN permit PDO/OD mapping and timeout. The
+  simulation-side guard is not a substitute.
 - Decision 11: whether ResetBaseController.srv belongs in the first package.
 - Decision 12: MB7060 topic names, rate, publisher and consumer freshness contract.
 - Decision 13: independent measured-position source, declared-position source, separate
@@ -398,7 +401,8 @@ receipt-time freshness, boot ID, uint32 sequence, uint16 contract version starti
 fault group 18001 ownership, restart-not-clearing-latched-fault rule, powered debug off by
 default and watchdog-first ordering. These frozen items are not reopened by this draft.
 
-The four separate firmware decisions Alex requested by 11 Nov—ZLAC 2000h/heartbeat timeout,
-robot lift-interlock owner, CTL-017 v1 object dictionary, and safety/IMU pin assignments—are
-also still awaiting Evans' decision/recording. They are tracked separately from the I8
-message-schema decisions above. Any change to a frozen field requires a change request in #30.
+The remaining separate firmware decisions Alex requested by 11 Nov—ZLAC 2000h/heartbeat
+timeout, CTL-017 v1 object dictionary, and safety/IMU pin assignments—remain tracked separately
+from the I8 message-schema decisions above. Lift-interlock ownership is no longer an open
+assignment; its detailed wire contract and validation dependencies remain open. Any change to a
+frozen field requires a change request in #30.
