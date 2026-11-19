@@ -52,6 +52,17 @@ must not infer ordering from the vector length. This lets a policy use normal
 LeRobot state/action features without a conversion format while keeping
 OpenAMRobot-only recording evidence additive under `openamrobot`.
 
+Canonical units (Proposed, [contract change request #41](https://github.com/openAMRobot/openamrobot-interfaces/issues/41)):
+joint positions are **radians** (`rad`), joint velocities `rad/s`, the lift
+position `m`, base velocities `m/s` and `rad/s`. Every OpenAMRobot capture
+profile uses these units. Degrees appear in one place only: the LeRobot
+bi-OpenArm adapter profile `lerobot-v0.6.1-bi-openarm-position` below. A
+converter that writes that profile converts explicitly at the adapter boundary
+(source unit `rad`, target unit `degree`, factor 180/pi from its declared
+conversion table); consumers never convert. The schema rejects a degree unit
+(`degree`, `degrees`, `deg`, `deg/s`, `degree/s`) in a vector feature whose
+`profile` is not the adapter profile.
+
 For the current OpenArm/LeRobot adapter profile, the direct dataset
 representation uses 16 position values in **degrees**, ordered
 `left_joint_1.pos` through `left_joint_7.pos`, `left_gripper.pos`, then
@@ -248,7 +259,9 @@ one of the three conditional requirements: a pending synchronization threshold
 must be null; a missing sample's selected timestamp must be null; and a missing
 sample must use an unavailable host-receipt timestamp status with no receipt
 raw or mapped time. None relies on malformed JSON/YAML. The existing validator
-is reused unchanged.
+is reused unchanged. Proposed with #41: a ninth negative fixture puts degree
+units under a non-adapter profile, and a second valid fixture uses a canonical
+radian profile.
 
 Camera conventions are evidenced by the [OpenArm camera examples](https://github.com/enactic/openarm_dataset/blob/1add81f9390afbbe1c1ebdf6bac0b22d687c56b4/README.md#L91-L112)
 and [LeRobot bimanual camera handling](https://github.com/huggingface/lerobot/blob/7e241bd630a3719a56157a497ce5d08f244784f1/src/lerobot/robots/bi_openarm_follower/bi_openarm_follower.py).
