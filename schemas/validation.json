@@ -4,7 +4,8 @@
     {
       "schema": "schemas/json/c9-lerobot-dataset.schema.json",
       "valid": [
-        "schemas/yaml/c9-lerobot-dataset-valid.yaml"
+        "schemas/yaml/c9-lerobot-dataset-valid.yaml",
+        "schemas/yaml/c9-lerobot-dataset-valid-canonical-radians.yaml"
       ],
       "invalid": [
         "schemas/json/c9-lerobot-dataset-invalid-missing-language.json",
@@ -14,7 +15,8 @@
         "schemas/json/c9-lerobot-dataset-invalid-missing-provenance.json",
         "schemas/json/c9-lerobot-dataset-invalid-pending-sync-tolerance.json",
         "schemas/json/c9-lerobot-dataset-invalid-missing-selected-timestamp.json",
-        "schemas/json/c9-lerobot-dataset-invalid-missing-host-receipt-timestamp.json"
+        "schemas/json/c9-lerobot-dataset-invalid-missing-host-receipt-timestamp.json",
+        "schemas/json/c9-lerobot-dataset-invalid-degrees-outside-adapter-profile.json"
       ]
     }
   ]

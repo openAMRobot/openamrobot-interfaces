@@ -51,7 +51,10 @@
         "shape": {"type": "array", "prefixItems": [{"type": "integer", "minimum": 1}], "minItems": 1, "maxItems": 1},
         "dimensions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/dimension"}},
         "profile": {"$ref": "#/$defs/nonEmptyString"}
-      }
+      },
+      "$comment": "Proposed (canonical radians, contract change request): angles are radians and angular rates rad/s; degrees appear only in the named LeRobot bi-OpenArm adapter profile, converted at the adapter boundary.",
+      "if": {"required": ["profile"], "properties": {"profile": {"const": "lerobot-v0.6.1-bi-openarm-position"}}},
+      "else": {"properties": {"dimensions": {"items": {"properties": {"unit": {"not": {"enum": ["degree", "degrees", "deg", "deg/s", "degree/s"]}}}}}}}
     },
     "nativeLeRobot": {
       "type": "object",
