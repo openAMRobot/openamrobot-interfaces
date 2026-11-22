@@ -1,0 +1,8 @@
+# Client releasing the current ownership lease.
+string client_id
+
+# UUID of the ownership lease being released.
+string lease_id
+---
+# Outcome of the release request.
+openamrobot_manipulation_interfaces/ActionResult result

@@ -1,0 +1,31 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Requested abort behavior.
+uint8 UNKNOWN=0
+uint8 STOP_ONLY=1
+uint8 RETRACT=2
+uint8 STOW=3
+uint8 abort_mode
+
+# Ownership lease authorizing this command.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome of the controlled task abort.
+openamrobot_manipulation_interfaces/ActionResult result
+---
+# Abort progress from 0.0 to 1.0.
+float32 progress_fraction
+
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Current measured joint positions and velocities.
+sensor_msgs/JointState current_joint_state
+
+# Current abort phase.
+uint8 UNKNOWN=0
+uint8 STOPPING=1
+uint8 RETRACTING=2
+uint8 STOWING=3
+uint8 phase

@@ -1,0 +1,48 @@
+# Identifies the target manipulator or coordinated manipulator group.
+openamrobot_manipulation_interfaces/ManipulatorSelector manipulator_selector
+
+# Selects the contact-motion target definition.
+uint8 UNKNOWN=0
+uint8 DIRECTION=1
+uint8 PLACEMENT_GOAL=2
+uint8 target_type
+
+# Direction of motion when target_type is DIRECTION.
+geometry_msgs/Vector3 direction
+
+# Target pose and tolerances when target_type is PLACEMENT_GOAL.
+openamrobot_manipulation_interfaces/PlacementGoal placement_goal
+
+# Contact force threshold in newtons.
+float64 force_threshold
+
+# Maximum permitted travel distance in metres.
+float64 max_travel_distance
+
+# Motion speed in metres per second.
+float64 speed
+
+# Maximum permitted execution time in seconds.
+# Zero means use the server-configured default.
+float64 timeout_sec
+
+# Ownership lease authorizing this motion.
+openamrobot_manipulation_interfaces/CommandContext command_context
+---
+# Final outcome. Reaching the requested contact normally returns SUCCEEDED.
+openamrobot_manipulation_interfaces/ActionResult result
+
+# Measured end-effector pose at contact.
+geometry_msgs/PoseStamped contact_pose
+
+# Measured force at contact, in newtons.
+float64 measured_force_at_contact
+---
+# Current measured end-effector pose.
+geometry_msgs/PoseStamped current_pose
+
+# Current estimated contact force, in newtons.
+float64 current_force_estimate
+
+# Distance travelled so far, in metres.
+float64 distance_traveled
