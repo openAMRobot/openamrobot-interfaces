@@ -1,2 +1,5 @@
 .verification/
 __pycache__/
+build/
+install/
+log/
