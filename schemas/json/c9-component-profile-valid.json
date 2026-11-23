@@ -368,7 +368,7 @@
         0.0,
         0.35
       ],
-      "state_source": "/arm/joint_states sensor_msgs/msg/JointState.position (sim); CTL-017 real telemetry pending interfaces#30",
+      "state_source": "/joint_states sensor_msgs/msg/JointState.position (Baseline 1 firmware_sil); CTL-017 real telemetry pending interfaces#30",
       "action_source": null,
       "authority": "openAMRobot/openamr-upperbody-sw@2ca739202f5c51114de1520902e811817d9b2a62:ros2/src/openamrobot_upperbody_description/urdf/openamrobot_upperbody.xacro + config/upperbody_configuration.yaml; generated combined model checked under ROS Jazzy (mock/gazebo/real); model limits only, physical validation pending",
       "status": "confirmed_model",

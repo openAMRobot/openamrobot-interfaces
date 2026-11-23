@@ -52,6 +52,21 @@ class ComponentContractTests(unittest.TestCase):
         )
         self.assertTrue(all(c["action_source"] is None for c in profile["channels"]))
 
+    def test_baseline1_lift_uses_merged_joint_states_in_profile_and_fixtures(self):
+        paths = (
+            "profiles/c9/mobile-lift-qpos-v1-proposed.json",
+            "schemas/json/c9-component-profile-valid.json",
+            "schemas/json/c9-component-profile-invalid.json",
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                profile = json.loads((ROOT / path).read_text())
+                (lift,) = (c for c in profile["channels"] if c["component"] == "lift")
+                self.assertEqual(
+                    lift["state_source"].split(maxsplit=2)[:2],
+                    ["/joint_states", "sensor_msgs/msg/JointState.position"],
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

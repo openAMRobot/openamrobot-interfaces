@@ -13,10 +13,11 @@ add fields to v1's closed episode objects. Existing C9/C10 consumers continue to
 read their existing sidecars. New consumers bind the adjunct's exact bytes/hash;
 C11 must continue rejecting an unsupported full-body policy.
 
-The proposed target vector explicitly contains seven left joints, left gripper,
-seven right joints, right gripper, lift position, base forward velocity and base
-yaw rate: 19 entries. Its identifier is distinct from the historical 19-channel
-fixed-mast vector (six joints per arm plus two torso placeholders). Neither may
+The proposed `openamrobot-mobile-lift-qpos-v1-proposed` vector contains seven left
+joints, left gripper, seven right joints, right gripper, lift position, base
+forward velocity and base yaw rate. The historical `openamrobot-fixed-mast-19dof`
+vector has three base channels, two torso placeholders, six joints per arm and
+two grippers. Neither 19-channel profile may
 be padded, truncated or relabelled as the other. Model joint names and ROS radian
 units are recorded; arm/gripper ranges now match the exact pinned generated-model
 bounds; they remain model values, not physically validated limits. No normalized gripper opening, motor angle, finger-joint
@@ -31,6 +32,30 @@ null until Device Package/CTL-017 and capture owners confirm them. The base mapp
 is blocked on platform#116; requested velocity, Nav2 goals, Nav2 outputs,
 post-arbitration accepted commands and firmware-applied telemetry remain separate.
 No timeout/watchdog/control behavior changes here.
+
+Baseline 1 `firmware_sil` run `44448676604` binds lift position to the `position`
+entry for `lift_joint` on merged `/joint_states`. Direct decoding of the published MCAP
+found the lift in all 5,512 merged messages and in zero of the 53,209
+`/arm/joint_states` messages. The latter supplies the 16 arm and primary gripper
+positions. The lift also appears in all 11,024 `/sil/gz/joint_states` messages,
+which represent a distinct simulator stream. Counts match `metadata.yaml`.
+Measured merged lift positions span −0.0005 m to 0.1752 m. The profile's bounds
+describe the pinned model, and capture tolerance remains a separate proposal.
+Consumers must bind the corrected adjunct hash when adopting these bytes.
+[Simulation recording and source hashes](https://github.com/openAMRobot/openamr-upperbody-sw/releases/tag/dev-evidence-baseline1-c9-2026-11-19).
+
+The pinned revolute gripper models use mirrored joint coordinates in radians,
+with left bounds `[0, 0.7854]` and right bounds `[-0.7854, 0]`. The Baseline 1
+drivers use the `pinch_gripper` configuration. The driver's `parallel_link`
+configuration instead uses a prismatic position in metres.
+[Driver configuration review](https://github.com/openAMRobot/openamr-upperbody-sw/issues/79#issuecomment-6953533442).
+
+The Baseline 1 capture candidate reads odometry from `/odom`. In the recorded
+navigation route, `/cmd_vel` comes from the collision monitor downstream of
+the velocity smoother and upstream of firmware. It carries a command with
+forward velocity in m/s and yaw rate in rad/s. The production command and
+firmware-applied telemetry bindings remain open.
+[Recording command map](https://github.com/openAMRobot/openamr-upperbody-sw/blob/a20746338701e7961c28ba4650e11996a1a76919/ros2/src/openamrobot_build1_scene/config/command_map.yaml#L72).
 
 The referenced Enactic sample at `1add81f9390afbbe1c1ebdf6bac0b22d687c56b4`
 records `arms/{left,right}/qpos` (joint1–7 + gripper, eight each) and optionally
@@ -79,8 +104,9 @@ Review checklist:
 Dependencies: no new package dependency in interfaces. Source facts derive from
 MIT OpenAMRobot contracts/model configuration and the cited upstream inventory;
 no upstream implementation is copied. Software is MIT; this document is CC-BY-4.0.
-Codex assisted with schema, tests, mapping and documentation. No physical or
-simulation recording, safety acceptance or new profile acceptance is claimed.
+Codex assisted with schema, tests, mapping and documentation. The published
+simulation recording establishes the source binding for that run. Physical
+evidence, safety acceptance and new profile acceptance remain outstanding.
 
 ## Generated-model follow-up
 

@@ -49,3 +49,10 @@ The PR evidence check fails when STATE.md exists and a PR neither updates it nor
   proposed C9 joint/type/range/interface checks in ROS Jazzy. Model arm/gripper
   bounds populated; real lift retains no ROS command interface. Dedicated CI
   retains generated evidence. Model checks do not grant motion/profile acceptance.
+
+- 22 November 2026: Baseline 1 run 44448676604 binds Proposed lift observation
+  to merged `/joint_states`. The released MCAP contains `lift_joint` in 5,512
+  merged messages and no arm-only messages. Real telemetry is pending interfaces#30.
+- 22 November 2026: corrected mapping passed the pinned generated-model check
+  for mock, Gazebo and real, and `tools/verify.sh` passed under ROS 2 Jazzy
+  with Fast DDS and Cyclone DDS.
